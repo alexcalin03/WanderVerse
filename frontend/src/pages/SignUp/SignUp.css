@@ -1,0 +1,106 @@
+@font-face {
+  font-family: 'Major Mono Display';
+  src: url('/public/resources/MajorMonoDisplay.ttf');
+  font-weight: bold;
+
+}
+
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f4f6; /* Light gray background */
+    flex-direction: column;
+    background-image: url('/public/resources/dolomites.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.signup-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.signup-form h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="password"],
+.signup-form input[type="email"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 1rem;
+  background: #f9fafb;
+  box-sizing: border-box;
+}
+
+.signup-form input:focus {
+  outline: none;
+  border-color: rgb(4, 193, 158); /* Blue border on focus */
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+
+
+.hover-button {
+  position: relative;
+  overflow: hidden; 
+  padding: 0.75rem;
+  background: linear-gradient(to right, rgb(11, 202, 167), rgb(13, 209, 196) , rgb(5, 174, 149)); 
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+  width: 100%;
+  z-index: 1;
+  transition: background-color 0.5s ease;
+
+}
+
+
+.login-link {
+  margin-top: 1rem;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+}
+
+.login link p {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.login-link span {
+  font-size: 0.9rem;
+  background: none;
+  color: rgb(29, 237, 188);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#titleH1 {
+  font-family: 'Major Mono Display';
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+
+
+
+

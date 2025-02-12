@@ -1,0 +1,136 @@
+@font-face {
+    font-family: 'Major Mono Display';
+    src: url('/public/resources/MajorMonoDisplay.ttf');
+    font-weight: bold;
+
+}
+
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f4f6;
+    flex-direction: column; 
+    background-image: url('/public/resources/hawaii1.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+
+.login-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    
+}
+
+
+.login-form h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 1rem;
+    background: #f9fafb;
+    box-sizing: border-box;
+}
+
+
+.login-form input:focus {
+    outline: none;
+    border-color: rgb(4, 193, 158); 
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+
+
+.hover-button {
+    position: relative;
+    overflow: hidden; 
+    padding: 0.75rem;
+    background: linear-gradient(to right, rgb(11, 202, 167), rgb(13, 209, 196) , rgb(5, 174, 149)); 
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    z-index: 1;
+
+}
+
+
+
+
+
+
+
+
+
+.login-form .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+
+.signup-link {
+    text-align: center; 
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; 
+}
+
+.signup-link p {
+    margin-bottom: 0.5rem; 
+    font-size: 0.9rem; 
+    color:white;
+}
+
+.signup-link span {
+    font-size: 0.9rem;
+    background: none;
+    color: rgb(29, 237, 188);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#titleH1 {
+    font-size: 35px;
+    color: white;
+    position: relative;
+    top: -50px;
+    font-family: 'Major Mono Display';
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    clip-path: instet(0 100% 0 0);
+    animation: reveal-text 2.2s ease forwards;
+    
+}
+
+@keyframes reveal-text {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        clip-path: inset(0 0% 0 0);
+    }
+}
+

@@ -1,0 +1,139 @@
+@font-face {
+    font-family: 'Major Mono Display';
+    src: url('/public/resources/MajorMonoDisplay.ttf');
+    font-weight: bold;
+
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    color: grey;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    margin-right: 0.5rem;
+    height: 50px;
+}
+
+.app-name {
+    font-size: 1.2rem;
+    font-weight: bolder;
+    color:rgb(4, 193, 158);
+    font-family: 'Major Mono Display';
+    
+}
+
+.navbar-middle {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-btn {
+    background: none;
+    color: grey;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: none;
+}
+
+.nav-btn.active {
+    color: black;
+}
+
+.nav-btn:hover {
+    color: black;
+    background-color: rgb(249, 247, 247);
+}
+
+.nav-btn.active:hover {
+    background-color: white;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.menu-icon {
+    background: none;
+    cursor: pointer;
+    font-size: 2 rem;
+    margin-right: 20px;
+    border: none;
+}
+
+.account-icon{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+
+
+
+.dropdown-menu {
+    opacity: 0;
+    position: absolute;
+    right: 35px;
+    top: 60px; 
+    background-color: white;
+    width: 200px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    opacity: 0;
+    transform: translateY(-70px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    flex-direction: column;
+}
+
+
+.dropdown-menu.show {
+    opacity: 1; 
+    transform: translateY(0); 
+    pointer-events: auto; 
+}
+
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: grey;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: 100%;
+}
+
+.dropdown-item:hover {
+    background-color: rgb(249, 247, 247); 
+    color: black; 
+}
+
+.error-message {
+    color: red;
+    margin-top: 1rem;
+}
+
+
+
+
