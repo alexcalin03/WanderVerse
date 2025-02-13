@@ -1,100 +1,79 @@
 .flight-form-container {
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-  }
+  position: fixed;  /* Sticks under the navbar */
+  top: 67px; /* Adjust this based on the navbar height */
+  left: 0;
+  width: 100vw; /* Full width */
+  background-color: white;/* Same as navbar */
+  padding: 10px 20px;
+  z-index: 999; /* Ensures it stays on top */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Ensures trip type selector is a separate row */
+.trip-type {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-weight: bold;
+  color: black;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ✅ Keeps inputs in a single row */
+.input-fields {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
   
-  .flight-form input,
-  .flight-form button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 30px;
-  }
-  
-  .flight-form button {
-    background-color: rgb(4, 193, 158);
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .flight-form button:hover {
-    background-color: rgb(3, 150, 123);
-  }
-
-
-  .trip-type {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
 }
 
-.trip-type label {
-    font-size: 14px;
-    font-weight: bold;
+/* ✅ Make input and button sizes uniform */
+.input-fields input,
+.input-fields button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  border: 2px solid rgb(4, 193, 158);
 }
 
-.flight-form input[type="radio"] {
-    margin-right: 5px;
+.input-fields input {
+  flex: 1;
+  max-width: 200px;
+}
+
+.input-fields input:focus {
+  outline: none;
+  border-color: rgb(4, 173, 138);
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.input-fields button {
+  background-color: rgb(4, 193, 158);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.input-fields button:hover {
+  background-color: rgb(4, 173, 138);
+  border-color: rgb(4, 173, 138);
 }
 
 
-/* When search is performed, switch to horizontal layout */
-.flight-form-container.horizontal {
-    justify-content: flex-start;
-    width: 90%;
-    max-width: 1200px;
+
+
+
+.flight-results {
+  margin-top: 80px;  /* Adjust this based on form height */
+  padding: 20px;
 }
 
-/* Change form to horizontal layout */
-.flight-form-container.horizontal .flight-form {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-}
 
-/* Adjust inputs and buttons for horizontal layout */
-.flight-form-container.horizontal input,
-.flight-form-container.horizontal button {
-    width: auto;
-    flex: 1;
-}
 
-.flight-form-container.horizontal .trip-type {
-    display: flex;
-    gap: 10px;
-}
 
-.flight-form-container.horizontal button {
-    white-space: nowrap;
-    padding: 10px 20px;
-}
-
-.loading {
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #007bff;
-    margin-top: 15px;
-}
-
-/* Optional: Spinner Animation */
-.loading::after {
-    content: "⏳";
-    animation: spin 1s infinite linear;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-  
- 
