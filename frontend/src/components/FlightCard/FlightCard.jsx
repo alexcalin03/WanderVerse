@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './FlightCard.css';
+import FlightModal from '../FlightModal/FlightModal';
 
 // Function to format duration (e.g., PT5H45M → 5h 45m)
 const formatDuration = (duration) => {
@@ -10,10 +11,10 @@ const formatDuration = (duration) => {
     const hours = hoursMatch ? `${hoursMatch[1]}h` : "";
     const minutes = minutesMatch ? `${minutesMatch[1]}m` : "";
 
-    return `${hours} ${minutes}`.trim(); // Ensure clean formatting
+    return `${hours} ${minutes}`.trim(); 
 };
 
-// Flight section component (for both outbound & return flights)
+
 const FlightSection = ({ title, flight }) => {
     if (!flight) return null; // If return flight doesn't exist, hide the section
 
@@ -36,8 +37,22 @@ const FlightSection = ({ title, flight }) => {
 };
 
 const FlightCard = ({ flight }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = "hidden";  // ✅ Disable scrolling
+        } else {
+            document.body.style.overflow = "auto";  // ✅ Enable scrolling
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";  // ✅ Reset on unmount
+        };
+    }, [isModalOpen]);
+
     return (
-        <div className="flight-card">
+        <>
+        <div className="flight-card" onClick={() => setIsModalOpen(true)}>
             <p className="airline"><strong>{flight.airline}</strong></p>
             <p className="price">{flight.price} {flight.currency}</p>
 
@@ -47,6 +62,9 @@ const FlightCard = ({ flight }) => {
             {/* Return Flight Section (Only if round-trip) */}
             {flight.return && <FlightSection title="Return Flight" flight={flight.return} />}
         </div>
+
+        {isModalOpen && <FlightModal flight={flight} onClose={() => setIsModalOpen(false)} />}
+        </>
     );
 };
 

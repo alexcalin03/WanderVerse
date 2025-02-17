@@ -1,15 +1,15 @@
 .flight-form-container {
-  position: fixed;  /* Sticks under the navbar */
-  top: 67px; /* Adjust this based on the navbar height */
+  position: fixed;  
+  top: 67px;
   left: 0;
-  width: 100vw; /* Full width */
-  background-color: white;/* Same as navbar */
+  width: 100vw; 
+  background-color: white;
   padding: 10px 20px;
-  z-index: 999; /* Ensures it stays on top */
+  z-index: 999; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ Ensures trip type selector is a separate row */
+
 .trip-type {
   display: flex;
   justify-content: center;
@@ -21,7 +21,7 @@
   margin-bottom: 10px;
 }
 
-/* ✅ Keeps inputs in a single row */
+
 .input-fields {
   display: flex;
   flex-wrap: wrap;
@@ -32,12 +32,12 @@
   
 }
 
-/* ✅ Make input and button sizes uniform */
+
 .input-fields input,
 .input-fields button {
   padding: 8px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   font-size: 16px;
   border: 2px solid rgb(4, 193, 158);
 }
@@ -70,8 +70,15 @@
 
 
 .flight-results {
-  margin-top: 80px;  /* Adjust this based on form height */
+  margin-top: 200px;  
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 20px;
+
 }
 
 

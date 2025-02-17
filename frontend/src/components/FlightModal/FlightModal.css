@@ -1,0 +1,79 @@
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+    text-align: center;
+  }
+  
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+
+  .flight-section {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+ 
+  .warning {
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  
+
+  .segment {
+    background: #ececec;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+  }
+  
+ 
+  .book-btn {
+    background: rgb(4, 193, 158);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .book-btn:hover {
+    background: rgb(4, 173, 138);
+  }
+  
