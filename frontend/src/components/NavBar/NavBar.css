@@ -13,12 +13,12 @@
     background-color: white;
     color: grey;
     font-family: Arial, sans-serif;
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     border-bottom: 1px solid #ccc;
+    z-index: 1100;
 }
 
 .navbar-left {
@@ -70,6 +70,7 @@
 .navbar-right {
     display: flex;
     align-items: center;
+    z-index: 1000;
 }
 
 .menu-icon {
@@ -103,6 +104,7 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
     flex-direction: column;
+    z-index: 1100;
 }
 
 

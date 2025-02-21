@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from .services.amadeus_services import search_flights, search_airports
+from .services.amadeus_services import search_flights, search_airports, search_hotels
 
 @api_view(['POST'])
 def register_user(request):
@@ -45,4 +45,21 @@ def airport_autocomplete_view(request):
 
     results = search_airports(query)
     return JsonResponse(results, safe=False)
+
+
+def hotel_search_view(request):
+    city_code = request.GET.get('cityCode')
+
+    if not city_code:
+        return JsonResponse({"error": "Missing required parameter: cityCode"}, status=400)
+
+    check_in = request.GET.get('checkIn', '2025-03-03')
+    check_out = request.GET.get('checkOut', '2025-03-10')
+    adults = request.GET.get('adults', 1)
+
+    hotel_data = search_hotels(city_code, check_in, check_out, adults)
+
+    return JsonResponse(hotel_data, safe=False)
+
+
 

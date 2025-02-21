@@ -75,14 +75,26 @@ const NavBar = ({ onSectionChange }) => {
                 </button>
             </div>
 
-            {/* Right: Menu/Person Icon */}
-            <div className="navbar-right" ref={dropdownRef}>
-                <button className="menu-icon"  onClick={() => setShowDropdown((prev) => !prev)}>
+            {/* Right: Person Icon */}
+            <div 
+                className="navbar-right" 
+                onMouseEnter={() => setShowDropdown(true)} 
+                onMouseLeave={(e) => {
+                    
+                    if (dropdownRef.current && !dropdownRef.current.contains(e.relatedTarget)) {
+                        setShowDropdown(false);
+                    }
+                }}
+            >
+                <button className="menu-icon">
                 <img src="/resources/accountcircle.svg" alt="Account Icon" className="account-icon" />
                 </button>
 
                 {showDropdown && (
-                    <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+                    <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}
+                    onMouseEnter={() => setShowDropdown(true)}
+                    onMouseLeave={() => setShowDropdown(false)}
+                    >
                         <button className="dropdown-item">Account</button>
                         <button className="dropdown-item" onClick={handleLogout}>Log Out</button>
                     </div>

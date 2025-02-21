@@ -121,3 +121,89 @@ def search_flights(origin, destination, departure_date, return_date=None, adults
     except ResponseError as error:
         return {"error": str(error)}
 
+
+def get_hotel_id(cityCode):
+    try:
+        response = amadeus.reference_data.locations.hotels.by_city.get(cityCode=cityCode)
+
+        if not response.data:
+            return {"error": "No hotels found for this city."}
+
+        #  Extract all hotel IDs
+        hotel_ids = [hotel["hotelId"] for hotel in response.data]
+
+
+        return hotel_ids
+
+    except ResponseError as error:
+        print(f" Amadeus API Error: {error.response.result}")
+        return {"error": str(error)}
+
+
+def search_hotels(cityCode, checkInDate, checkOutDate, adults):
+    try:
+        hotel_ids = get_hotel_id(cityCode)
+        if "error" in hotel_ids:
+            return hotel_ids
+
+        # Limit to 10 hotels to avoid API errors
+        hotel_ids = hotel_ids[:10]
+
+        kwargs = {
+            "hotelIds": ",".join(hotel_ids),
+            "checkInDate": checkInDate,
+            "checkOutDate": checkOutDate,
+            "adults": str(adults),
+            "roomQuantity": "1",
+            "currency": "USD",
+            "bestRateOnly": "true",
+            "view": "FULL"
+        }
+
+        response = amadeus.shopping.hotel_offers_search.get(**kwargs)
+
+        if not response.data:
+            return {"error": "No hotel offers available."}
+
+        hotel_data = []
+        for hotel in response.data:
+            hotel_info = hotel.get("hotel", {})
+            offers = hotel.get("offers", [])
+
+            if not offers:
+                continue
+
+            for offer in offers:
+                # Extract room details safely
+                room_info = offer.get("room", {}).get("typeEstimated", {})
+                cancellation_policy = offer.get("policies", {}).get("cancellation", {}).get("description", {}).get("text", "No cancellation policy")
+
+                hotel_data.append({
+                    "hotel_id": hotel_info.get("hotelId", "Unknown"),
+                    "name": hotel_info.get("name", "Unknown"),
+                    "city_code": hotel_info.get("cityCode", "Unknown"),
+                    "latitude": hotel_info.get("latitude", None),
+                    "longitude": hotel_info.get("longitude", None),
+                    "available": hotel.get("available", False),
+                    "room_type": room_info.get("category", "N/A"),
+                    "beds": room_info.get("beds", "N/A"),
+                    "bed_type": room_info.get("bedType", "N/A"),
+                    "room_description": offer.get("room", {}).get("description", {}).get("text", "No description"),
+                    "price": offer.get("price", {}).get("total", "N/A"),
+                    "currency": offer.get("price", {}).get("currency", "N/A"),
+                    "payment_type": offer.get("policies", {}).get("paymentType", "N/A"),
+                    "cancellation_policy": cancellation_policy,
+                    "api_link": offer.get("self", "N/A")
+                })
+
+        return hotel_data
+
+    except ResponseError as error:
+        return {"error": str(error)}
+
+
+
+
+
+
+
