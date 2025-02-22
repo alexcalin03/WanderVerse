@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from .services.amadeus_services import search_flights, search_airports, search_hotels
+from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities
 
 @api_view(['POST'])
 def register_user(request):
@@ -60,6 +60,15 @@ def hotel_search_view(request):
     hotel_data = search_hotels(city_code, check_in, check_out, adults)
 
     return JsonResponse(hotel_data, safe=False)
+
+
+def city_autocomplete_view(request):
+    query = request.GET.get('query')
+    if not query:
+        return JsonResponse({"error": "No query provided"}, status=400)
+
+    results = search_cities(query)
+    return JsonResponse(results, safe=False)
 
 
 

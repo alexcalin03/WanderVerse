@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Ensures dropdown stays on top of other elements */
+.ui-autocomplete {
+  position: absolute !important;
+  z-index: 1050 !important; 
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 250px; 
+  overflow-y: auto;  
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+.ui-autocomplete.ui-front {
+  position: fixed !important;
+}
+
+
+.ui-menu-item .ui-state-active {
+  background-color: whitesmoke !important;
+  color: black !important;
+  border-color: whitesmoke !important;
+}
+
+
+.ui-helper-hidden-accessible {
+  display: none;
+}
+

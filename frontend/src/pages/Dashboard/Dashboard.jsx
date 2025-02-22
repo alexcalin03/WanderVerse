@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import NavBar from '../../components/NavBar/NavBar'; 
 import FlightForm from '../../components/FlightForm/FlightForm';
+import HotelForm from '../../components/HotelForm/HotelForm';
 import './Dashboard.css';
+
 
 const Dashboard = () => {
 
@@ -14,7 +16,7 @@ const Dashboard = () => {
         <div>
             <NavBar onSectionChange={handleSectionChange} />
             <div className="content">
-                {activeSection === 'stays' && <h2>Showing Stays</h2>}
+                {activeSection === 'stays' && <HotelForm />}
                 {activeSection === 'flights' && <FlightForm />}
                 {activeSection === 'attractions' && <h2>Showing Attractions</h2>}
             </div>

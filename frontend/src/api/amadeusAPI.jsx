@@ -38,3 +38,35 @@ export const fetchHotels = async (cityCode, checkInDate, checkOutDate, adults = 
         throw error;
     }
 }
+
+export const fetchCities = async (query) => {
+    try {
+        const response = await axios.get(`${API_BASE}/cities/`, {
+            params: { query }
+        });
+        return response.data.map(item => ({
+            label: `${item.city_name}, ${item.country_name}`,
+            value: item.iata_code
+        }));
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        throw error;
+    }
+} 
+
+
+export const fetchAirports = async (query) => {
+    try {
+        const response = await axios.get(`${API_BASE}/airports/`, {
+            params: { query }
+        });
+
+        return response.data.map(item => ({
+            label: `${item.airport_name} (${item.iata_code}), ${item.city_name}`,
+            value: item.iata_code
+        }));
+    } catch (error) {
+        console.error('Error fetching airports:', error);
+        return [];
+    }
+};

@@ -1,0 +1,50 @@
+.hotel-form-container {
+    position: fixed;  
+    top: 67px;
+    left: 0;
+    width: 100vw; 
+    background-color: white;
+    padding: 10px 20px;
+    z-index: 1000; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ensure the form is taking full width */
+  .hotel-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  /* This targets inputs and button */
+  .hotel-form input,
+  .hotel-form button {
+    padding: 8px 12px;
+    border: 2px solid rgb(4, 193, 158);
+    border-radius: 20px;
+    font-size: 16px;
+    max-width: 200px;
+    outline: none;
+  }
+  
+  /* Style focus effect */
+  .hotel-form input:focus {
+    border-color: rgb(4, 173, 138);
+    box-shadow: 0 0 5px rgba(4, 173, 138, 0.5);
+  }
+  
+  /* Style the submit button */
+  .hotel-form button {
+    background-color: rgb(4, 193, 158);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .hotel-form button:hover {
+    background-color: rgb(4, 173, 138);
+    border-color: rgb(4, 173, 138);
+  }
+  

@@ -147,7 +147,7 @@ def search_hotels(cityCode, checkInDate, checkOutDate, adults):
             return hotel_ids
 
         # Limit to 10 hotels to avoid API errors
-        hotel_ids = hotel_ids[:10]
+        hotel_ids = hotel_ids[:35]
 
         kwargs = {
             "hotelIds": ",".join(hotel_ids),
@@ -197,6 +197,31 @@ def search_hotels(cityCode, checkInDate, checkOutDate, adults):
                 })
 
         return hotel_data
+
+    except ResponseError as error:
+        return {"error": str(error)}
+
+
+
+def search_cities (query):
+    try:
+        response = amadeus.reference_data.locations.get(
+            keyword=query,
+            subType="CITY",
+            page={"limit": 5}  # Limit results to 5 suggestions
+        )
+
+        if response.data:
+            return [
+                {
+                    "city_name": city.get("name", "Unknown City"),
+                    "iata_code": city.get("iataCode", "N/A"),
+                    "country_name": city.get("address", {}).get("countryName", "Unknown Country")
+                }
+                for city in response.data
+            ]
+
+        return []
 
     except ResponseError as error:
         return {"error": str(error)}
