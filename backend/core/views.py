@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities
+from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities, search_attractions
 
 @api_view(['POST'])
 def register_user(request):
@@ -69,6 +69,19 @@ def city_autocomplete_view(request):
 
     results = search_cities(query)
     return JsonResponse(results, safe=False)
+
+def attractions_search_view(request):
+    latitude = request.GET.get('latitude')
+    longitude = request.GET.get('longitude')
+
+    if not latitude or not longitude:
+        return JsonResponse({"error": "Missing required parameters: latitude and longitude"}, status=400)
+    attractions_data = search_attractions(latitude, longitude)
+
+    return JsonResponse(attractions_data, safe=False)
+
+
+
 
 
 

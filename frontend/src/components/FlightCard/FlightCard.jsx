@@ -16,9 +16,9 @@ const formatDuration = (duration) => {
 
 
 const FlightSection = ({ title, flight }) => {
-    if (!flight) return null; // If return flight doesn't exist, hide the section
+    if (!flight) return null; 
 
-    const hasConnection = flight.segments.length > 1; // Check if there's a connection
+    const hasConnection = flight.segments.length > 1; 
 
     return (
         <div className="flight-section">
@@ -38,34 +38,39 @@ const FlightSection = ({ title, flight }) => {
 
 const FlightCard = ({ flight }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     useEffect(() => {
         if (isModalOpen) {
-            document.body.style.overflow = "hidden";  // ✅ Disable scrolling
+            document.body.style.overflow = "hidden";  
         } else {
-            document.body.style.overflow = "auto";  // ✅ Enable scrolling
+            document.body.style.overflow = "auto";  
         }
 
         return () => {
-            document.body.style.overflow = "auto";  // ✅ Reset on unmount
+            document.body.style.overflow = "auto";  
         };
     }, [isModalOpen]);
 
     return (
         <>
-        <div className="flight-card" onClick={() => setIsModalOpen(true)}>
-            <p className="airline"><strong>{flight.airline}</strong></p>
-            <p className="price">{flight.price} {flight.currency}</p>
+            <div className="flight-card" onClick={() => setIsModalOpen(true)}>
+                {/* Left Section - Airline Name */}
+                <div className="flight-left">
+                    <p className="airline"><strong>{flight.airline}</strong></p>
+                </div>
 
-            {/* Outbound Flight Section */}
-            <FlightSection title="Outbound Flight" flight={flight.outbound} />
+                {/* Right Section - Flight Details & Price */}
+                <div className="flight-right">
+                    <FlightSection title="Outbound Flight" flight={flight.outbound} />
+                    {flight.return && <FlightSection title="Return Flight" flight={flight.return} />}
+                    <p className="price">{flight.price} {flight.currency}</p>
+                </div>
+            </div>
 
-            {/* Return Flight Section (Only if round-trip) */}
-            {flight.return && <FlightSection title="Return Flight" flight={flight.return} />}
-        </div>
-
-        {isModalOpen && <FlightModal flight={flight} onClose={() => setIsModalOpen(false)} />}
+            {isModalOpen && <FlightModal flight={flight} onClose={() => setIsModalOpen(false)} />}
         </>
     );
 };
+
 
 export default FlightCard;

@@ -72,6 +72,7 @@ const HotelForm = () => {
     };
 
     return (
+        <>
         <div className="hotel-form-container">
             <form onSubmit={handleSubmit} className="hotel-form">
     <div className="input-fields">
@@ -108,17 +109,15 @@ const HotelForm = () => {
     </div>
 </form>
 
-            {loading && <Loading />}
-
-            {!loading && results.length > 0 && (
-                <div className="hotel-results">
-                    {results.map((hotel, index) => (
-                        <HotelCard key={index} hotel={hotel} />
-                    ))}
-                </div>
-            )}
         </div>
-    );
+        <div className="hotel-results">
+            {loading && <Loading />}
+            {!loading && results.length > 0 && results.map((hotel, index) => (
+                <HotelCard key={index} hotel={hotel} checkInDate={checkInDate} checkOutDate={checkOutDate} />
+            ))}
+        </div>
+        
+   </> );
 };
 
 export default HotelForm;

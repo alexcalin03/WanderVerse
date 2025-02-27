@@ -216,7 +216,9 @@ def search_cities (query):
                 {
                     "city_name": city.get("name", "Unknown City"),
                     "iata_code": city.get("iataCode", "N/A"),
-                    "country_name": city.get("address", {}).get("countryName", "Unknown Country")
+                    "country_name": city.get("address", {}).get("countryName", "Unknown Country"),
+                    "latitude": city.get("geoCode", {}).get("latitude", None),
+                    "longitude": city.get("geoCode", {}).get("longitude", None)
                 }
                 for city in response.data
             ]
@@ -225,6 +227,40 @@ def search_cities (query):
 
     except ResponseError as error:
         return {"error": str(error)}
+
+
+
+def search_attractions(latitude, longitude, radius=20):
+    try:
+        response = amadeus.shopping.activities.get(
+            latitude=latitude,
+            longitude=longitude,
+            radius=radius
+        )
+
+        if response.data:
+            return [
+                {
+                    "name": activity.get("name", "Unknown Activity"),
+                    "short_description": activity.get("shortDescription", "No description available"),
+                    "latitude": activity.get("geoCode", {}).get("latitude", "N/A"),
+                    "longitude": activity.get("geoCode", {}).get("longitude", "N/A"),
+                    "rating": activity.get("rating", "N/A"),
+                    "image": activity.get("pictures")[0] if activity.get("pictures") else "https://via.placeholder.com/150",
+                    "price": activity.get("price", {}).get("amount", "N/A"),
+                    "currency": activity.get("price", {}).get("currencyCode", "N/A"),
+                    "booking_link": activity.get("bookingLink", "N/A"),
+                }
+                for activity in response.data
+                if activity.get("bookingLink")  # Filter out activities without booking links
+                if activity.get("pictures")  # Filter out activities without pictures
+            ]
+
+        return {"error": "No activities found"}
+    except ResponseError as error:
+        return {"error": str(error)}
+
+
 
 
 

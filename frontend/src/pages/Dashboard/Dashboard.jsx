@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import NavBar from '../../components/NavBar/NavBar'; 
 import FlightForm from '../../components/FlightForm/FlightForm';
 import HotelForm from '../../components/HotelForm/HotelForm';
+import AttractionForm from '../../components/AttractionForm/AttractionForm';
 import './Dashboard.css';
 
 
@@ -18,7 +19,7 @@ const Dashboard = () => {
             <div className="content">
                 {activeSection === 'stays' && <HotelForm />}
                 {activeSection === 'flights' && <FlightForm />}
-                {activeSection === 'attractions' && <h2>Showing Attractions</h2>}
+                {activeSection === 'attractions' && <AttractionForm />}
             </div>
         </div>
     );

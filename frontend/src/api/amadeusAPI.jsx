@@ -46,7 +46,9 @@ export const fetchCities = async (query) => {
         });
         return response.data.map(item => ({
             label: `${item.city_name}, ${item.country_name}`,
-            value: item.iata_code
+            value: item.iata_code,
+            latitude: item.latitude,
+            longitude: item.longitude
         }));
     } catch (error) {
         console.error('Error fetching cities:', error);
@@ -70,3 +72,24 @@ export const fetchAirports = async (query) => {
         return [];
     }
 };
+
+
+export const fetchAttractions = async (latitude, longitude) => {
+    try {
+        const response = await axios.get(`${API_BASE}/attractions/`, {
+            params: { latitude, longitude }
+        });
+        return response.data.map(item => ({
+            name: item.name,
+            description : item.short_description,
+            rating: item.rating,
+            latitude: item.latitude,
+            longitude: item.longitude,
+            image: item.image,
+            booking_link: item.booking_link
+        }));
+    } catch (error) {
+        console.error('Error fetching attractions:', error);
+        throw error;
+    }
+}

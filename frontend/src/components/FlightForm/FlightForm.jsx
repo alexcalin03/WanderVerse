@@ -64,7 +64,7 @@ const FlightForm = () => {
             <div className="flight-form-container">
                 <form onSubmit={handleSubmit} className="flight-form">
                     
-                    {/* ✅ One-Way / Round-Trip Selector at the Top */}
+                    {/*  One-Way / Round-Trip Selector at the Top */}
                     <div className="trip-type">
                         <label>
                             <input
