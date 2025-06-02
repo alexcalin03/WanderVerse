@@ -1,9 +1,17 @@
 from amadeus import Client, ResponseError
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_KEY = os.getenv('AMADEUS_API_KEY')
+API_SECRET = os.getenv('AMADEUS_API_SECRET')
+
 # Initialize the Amadeus Client with your credentials
 amadeus = Client(
-    client_id='O7pD1o2pyRt6urRSAfObUktyO8d5ebMT',
-    client_secret='GcOrQ608lnZPkTY8'
+    client_id=API_KEY,
+    client_secret=API_SECRET
 )
 
 
@@ -161,6 +169,7 @@ def search_hotels(cityCode, checkInDate, checkOutDate, adults):
         }
 
         response = amadeus.shopping.hotel_offers_search.get(**kwargs)
+        
 
         if not response.data:
             return {"error": "No hotel offers available."}

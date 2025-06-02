@@ -8,7 +8,7 @@ import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 
 
-const HotelForm = () => {
+const HotelForm = ({ onSearch }) => {
     const [cityCode, setCityCode] = useState('');
     const [displayValue, setDisplayValue] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
@@ -59,17 +59,22 @@ const HotelForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!cityCode) {
+            alert("Please select a city from the suggestions.");
+            return;
+        }
         setLoading(true);
         setResults([]);  
-        
         try {
             const data = await fetchHotels(cityCode, checkInDate, checkOutDate, adults);
             setResults(data);
         } catch (error) {
             console.error('Error fetching hotels:', error);
         }
+        if(onSearch) onSearch();
         setLoading(false);
     };
+
 
     return (
         <>
@@ -79,7 +84,7 @@ const HotelForm = () => {
         <input
             id="city"
             type="text"
-            placeholder="Enter City Code (e.g., LON)"
+            placeholder="Enter City Name"
             value={displayValue}
             onChange={(e) => setDisplayValue(e.target.value)}
             required
@@ -103,7 +108,7 @@ const HotelForm = () => {
             onChange={(e) => setAdults(e.target.value)}
             required
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || !cityCode}>
             {loading ? "Searching..." : "Search Hotels"}
         </button>
     </div>

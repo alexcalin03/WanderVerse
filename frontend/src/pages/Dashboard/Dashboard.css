@@ -1,3 +1,18 @@
 .content{
     margin-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    width: 100%;
+    flex-direction: column;
+}
+.center-message {
+    font-size: 1.5rem;
+    color: #444;
+    font-weight: 500;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+
 }

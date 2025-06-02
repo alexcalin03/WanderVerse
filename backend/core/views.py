@@ -6,6 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities, search_attractions
+from .serializers import BlogPostCreateSerializer
 
 @api_view(['POST'])
 def register_user(request):
@@ -53,8 +54,8 @@ def hotel_search_view(request):
     if not city_code:
         return JsonResponse({"error": "Missing required parameter: cityCode"}, status=400)
 
-    check_in = request.GET.get('checkIn', '2025-03-03')
-    check_out = request.GET.get('checkOut', '2025-03-10')
+    check_in = request.GET.get('checkInDate', '2025-11-03')
+    check_out = request.GET.get('checkOutDate', '2025-11-10')
     adults = request.GET.get('adults', 1)
 
     hotel_data = search_hotels(city_code, check_in, check_out, adults)
@@ -79,6 +80,64 @@ def attractions_search_view(request):
     attractions_data = search_attractions(latitude, longitude)
 
     return JsonResponse(attractions_data, safe=False)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def post_blog_view(request):
+    serializer = BlogPostCreateSerializer(data=request.data, context={'request': request})
+    if not serializer.is_valid():
+        return Response(
+            {"errors": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        blog_post = serializer.save()
+    except Exception as e:
+        return Response(
+            {"error": "Could not create blog post. Please try again later."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    response_data = {
+        "id": blog_post.id,
+        "slug": blog_post.slug,
+        "title": blog_post.title,
+        "content": blog_post.content,
+        "location": blog_post.location,
+        "reads": blog_post.reads,
+        "likes": blog_post.likes,
+        "created_at": blog_post.created_at,
+        "updated_at": blog_post.updated_at,
+        "author_id": request.user.id,
+        "author_username": request.user.username,
+    }
+    return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def blog_details_view(request, blog_id):
+    try:
+        blog = BlogPost.objects.get(id=blog_id)
+    except BlogPost.DoesNotExist:
+        return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = BlogPostCreateSerializer(blog)
+        return Response(serializer.data)
+
+    elif request.method in ['PUT', 'PATCH']:
+        serializer = BlogPostCreateSerializer(blog, data=request.data, partial=(request.method == 'PATCH'))
+        if serializer.is_valid():
+            serializer.save()
+            
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        blog.delete()
+        return Response({"message": "Blog post deleted."}, status=status.HTTP_204_NO_CONTENT)
+
 
 
 
