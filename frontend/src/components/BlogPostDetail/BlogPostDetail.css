@@ -1,0 +1,100 @@
+.blog-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  
+  .back-button:hover {
+    text-decoration: underline;
+  }
+  
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .author {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .heart-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .heart-icon.favorited {
+    color: red;
+  }
+  
+  .heart-icon path {
+    fill: currentColor;
+  }
+  
+  .detail-content {
+    margin-bottom: 24px;
+  }
+  
+  .title {
+    margin: 0 0 8px;
+    font-size: 24px;
+    color: #222;
+  }
+  
+  .content {
+    margin: 0 0 16px;
+    line-height: 1.6;
+    color: #444;
+  }
+  
+  .comment-button-wrapper {
+    margin-top: 8px;
+  }
+  
+  .comment-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .comment-icon:hover {
+    color: #000;
+  }
+
+  .comments-section {
+    border-top: 1px solid #ddd;
+    padding-top: 16px;
+  }
+  
+  .comments-section h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    color: #333;
+  }
+  
+
+  .detail-loading,
+  .detail-error {
+    text-align: center;
+    padding: 32px;
+    color: #666;
+  }
+  

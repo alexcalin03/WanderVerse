@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import list_blogs, register_user, logout_user, flight_search_view, airport_autocomplete_view, hotel_search_view, city_autocomplete_view
 from .views import attractions_search_view, post_blog_view, blog_details_view
-from .views import increment_reads, increment_likes, post_or_get_comment, get_blogs
+from .views import increment_reads, like_post, post_or_get_comment
 
 urlpatterns = [
     path('register/', register_user),
@@ -26,7 +26,7 @@ urlpatterns = [
 
     path('blog/<int:blog_id>/reads/', increment_reads, name='increment_reads'),
 
-    path('blog/<int:blog_id>/likes/', increment_likes, name='increment_likes'),
+    path('blog/<int:blog_id>/likes/', like_post, name='like_post'),
 
     path('blog/<int:blog_id>/comments/', post_or_get_comment, name='post_comment'),
 

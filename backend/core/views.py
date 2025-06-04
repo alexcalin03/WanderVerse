@@ -127,7 +127,21 @@ def blog_details_view(request, blog_id):
 
     if request.method == 'GET':
         serializer = BlogPostCreateSerializer(blog)
-        return Response(serializer.data)
+        comments_qs = Comment.objects.filter(blog_post=blog)
+        comments = CommentCreateSerializer(comments_qs, many=True, context={'request': request})
+        user = request.user
+        if user.is_authenticated:
+            is_liked = blog.liked_by.filter(pk=user.pk).exists()
+        else:
+            is_liked = False
+
+        likes_count = blog.liked_by.count()
+        return Response({
+            "blog": serializer.data,
+            "comments": comments.data,
+            "is_liked": is_liked,
+            "likes_count": likes_count
+        }, status=status.HTTP_200_OK)
 
     elif request.method in ['PUT', 'PATCH']:
         serializer = BlogPostCreateSerializer(blog, data=request.data, partial=(request.method == 'PATCH'))
@@ -196,19 +210,50 @@ def increment_reads(request, blog_id):
     except BlogPost.DoesNotExist:
         return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
+@api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def increment_likes(request, blog_id):
+def like_post(request, blog_id):
     try:
         blog = BlogPost.objects.get(id=blog_id)
-        blog.likes += 1
-        blog.save()
-        return Response({"message": "Likes incremented successfully."}, status=status.HTTP_200_OK)
     except BlogPost.DoesNotExist:
         return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
 
+    user = request.user
 
+    if request.method == 'POST':
+        if blog.liked_by.filter(pk=user.pk).exists():
+            return Response(
+                {
+                    "message": "You have already liked this post.",
+                    "likes_count": blog.liked_by.count()
+                },
+                status=status.HTTP_200_OK
+            )
+        blog.liked_by.add(user)
+        return Response(
+            {
+                "message": "Post liked successfully.",
+                "likes_count": blog.liked_by.count()
+            },
+            status=status.HTTP_200_OK
+        )
 
+    if not blog.liked_by.filter(pk=user.pk).exists():
+        return Response(
+            {
+                "message": "You have not liked this post yet.",
+                "likes_count": blog.liked_by.count()
+            },
+            status=status.HTTP_200_OK
+        )
+    blog.liked_by.remove(user)
+    return Response(
+        {
+            "message": "Post unliked successfully.",
+            "likes_count": blog.liked_by.count()
+        },
+        status=status.HTTP_200_OK
+    )
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

@@ -76,20 +76,29 @@
     color: #666;
   }
   
-  .blog-card-likes i {
-    color: #ff4757;
-    cursor: pointer;
-  }
-  
-  .blog-card-likes i:hover {
-    transform: scale(1.2);
-  }
-  
-  .blog-card-reads i {
-    color: #2f80ed;
-  }
-  
   .blog-card-date {
     font-size: 0.8rem;
     color: #999;
+  }
+
+  .blog-card-heart, .blog-card-eye {
+    width: 20px;
+    height: 20px;
+  }
+
+  .heart-icon {
+    width: 20px;
+    height: 20px;
+    fill: #888; 
+    cursor: pointer;
+  }
+  
+  .heart-icon.liked {
+    fill: #e74c3c; 
+  }
+  
+  .eye-icon {
+    width: 20px;
+    height: 20px;
+    fill: #555;
   }

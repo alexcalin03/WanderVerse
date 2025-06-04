@@ -1,0 +1,15 @@
+.comment-card {
+    width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .comment-author {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .comment-body {
+    white-space: pre-wrap;
+  }
+  

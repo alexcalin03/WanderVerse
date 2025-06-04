@@ -19,3 +19,25 @@ export async function fetchBlogsPage(page = 1, perPage = 15) {
   cache[cacheKey] = data;
   return data;
 }
+
+export async function increment_likes(blog_id) {
+  const url = `/blog/${blog_id}/likes/`;
+  await axios.post(url);
+}
+
+export async function increment_reads(blog_id) {
+  const url = `/blog/${blog_id}/reads/`;
+  await axios.post(url);
+}
+
+export async function decrement_likes(blog_id) {
+  const url = `/blog/${blog_id}/likes/`;
+  await axios.delete(url);
+}
+
+export async function fetchBlog(blog_id) {
+  const url = `/blog/${blog_id}/`;
+  const response = await axios.get(url);
+  return response.data;
+}
+  

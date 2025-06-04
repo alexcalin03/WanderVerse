@@ -7,6 +7,10 @@ class BlogPostCreateSerializer(serializers.ModelSerializer):
         trim_whitespace=True,
         help_text="Required. 200 characters or fewer."
     )
+
+    user = serializers.CharField(source='user.username',
+        read_only=True
+    )
     content = serializers.CharField(
         allow_blank=False,
         trim_whitespace=False,
@@ -20,7 +24,7 @@ class BlogPostCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = ['title', 'content', 'location']
+        fields = ['title', 'user', 'content', 'location']
 
     def validate_title(self, value):
         if len(value.strip()) < 5:
@@ -40,6 +44,8 @@ class BlogPostCreateSerializer(serializers.ModelSerializer):
 class BlogPostListSerializer(serializers.ModelSerializer):
     author_username = serializers.CharField(source='user.username', read_only=True)
     excerpt = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = BlogPost
@@ -51,7 +57,8 @@ class BlogPostListSerializer(serializers.ModelSerializer):
             'location',
             'author_username',
             'reads',
-            'likes',
+            'likes_count',
+            'is_liked',
             'created_at',
         ]
 
@@ -59,6 +66,15 @@ class BlogPostListSerializer(serializers.ModelSerializer):
         # show the first 100 characters of content
         text = obj.content or ''
         return text[:100] + '...' if len(text) > 100 else text
+
+    def get_likes_count(self, obj):
+        return obj.liked_by.count()
+
+    def get_is_liked(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.liked_by.filter(pk=user.pk).exists()
+        return False
 
 
 

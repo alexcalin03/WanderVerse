@@ -1,24 +1,23 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import './BlogCard.css';
-import { useNavigate } from 'react-router-dom';
+import {  increment_reads } from '../../api/internalAPI';
+import { ReactComponent as HeartIcon } from '../../assets/heart.svg';
+import { ReactComponent as EyeIcon } from '../../assets/eye.svg';
 
-const BlogCard = ({ post, onLike, onReadMore }) => {
-  const navigate = useNavigate();
-  
+const BlogCard = ({ post, onReadMore }) => {
+  const [likesCount, setLikesCount] = useState(post.likes_count);
+  const [isLiked, setIsLiked] = useState(post.is_liked);
+
+
+
   const handleReadMore = () => {
     if (onReadMore) {
       onReadMore(post.id);
-    }
-    navigate(`/blog/${post.id}`);
-  };
-  
-  const handleLike = (e) => {
-    e.stopPropagation();
-    if (onLike) {
-      onLike(post.id);
+      increment_reads(post.id);
     }
   };
+
+
 
   return (
     <div className="blog-card">
@@ -26,19 +25,21 @@ const BlogCard = ({ post, onLike, onReadMore }) => {
         <div className="blog-card-author">{post.author_username}</div>
         <div className="blog-card-location">{post.location}</div>
       </div>
-      
+
       <div className="blog-card-content" onClick={handleReadMore}>
         <h3 className="blog-card-title">{post.title}</h3>
         <p className="blog-card-excerpt">{post.excerpt}</p>
       </div>
-      
+
       <div className="blog-card-footer">
         <div className="blog-card-stats">
           <div className="blog-card-likes">
-            <i className="fa fa-heart" onClick={handleLike}></i> {post.likes}
+            <HeartIcon className={`heart-icon ${isLiked ? 'liked' : ''}`} />
+            <span className="like-count">{likesCount}</span>
           </div>
           <div className="blog-card-reads">
-            <i className="fa fa-eye"></i> {post.reads}
+            <EyeIcon className="blog-card-eye" />
+            <span className="read-count">{post.reads}</span>
           </div>
         </div>
         <div className="blog-card-date">

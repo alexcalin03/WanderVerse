@@ -33,4 +33,16 @@
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+
+  .blog-card-link {
+    text-decoration: none;   
+    color: inherit;          
+    display: block;          
+    width: 100%;            
+  }
+  
+  .blog-card-link:hover .blog-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
   

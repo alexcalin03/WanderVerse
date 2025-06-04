@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import BlogCard from '../BlogCard/BlogCard';
-import { fetchBlogsPage } from '../../api/internalAPI';
-import './BlogFeed.css';
 
-const BlogFeed = () => {
+import React, { useState, useEffect } from 'react';
+import { fetchBlogsPage, increment_reads } from '../../api/internalAPI';
+import './BlogFeed.css';
+import BlogCard from '../BlogCard/BlogCard';
+import BlogPostDetail from '../BlogPostDetail/BlogPostDetail'; // import the detail component
+
+const BlogFeed = ({ onSearch }) => {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+
+
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
 
   useEffect(() => {
     const loadInitial = async () => {
@@ -17,12 +22,13 @@ const BlogFeed = () => {
         const data = await fetchBlogsPage(1, perPage);
         setPosts(data.results);
         setTotalPages(data.total_pages);
+        onSearch();
       } finally {
         setLoading(false);
       }
     };
     loadInitial();
-  }, [perPage]);
+  }, [perPage, onSearch]);
 
   const loadMore = async () => {
     if (page >= totalPages || loading) return;
@@ -37,23 +43,32 @@ const BlogFeed = () => {
     }
   };
 
-  const handleLike = async (id) => {
-    // placeholder for like logic
-  };
+  // If the user has clicked a card, render BlogPostDetail instead of the feed.
+  if (selectedBlogId !== null) {
+    return (
+      <div className="blog-detail-wrapper">
+        <BlogPostDetail
+          blogId={selectedBlogId}
+          onBack={() => setSelectedBlogId(null)}
+        />
+      </div>
+    );
+  }
 
-  const handleReadMore = (id) => {
-    // placeholder for read-more logic
-  };
-
+  // Otherwise, show the feed itself.
   return (
     <div className="blog-feed">
       {posts.map(post => (
-        <BlogCard
+        <div
           key={post.id}
-          post={post}
-          onLike={handleLike}
-          onReadMore={handleReadMore}
-        />
+          className="blog-card-link"
+          onClick={() => {
+            setSelectedBlogId(post.id);
+            increment_reads(post.id);
+          }}
+        >
+          <BlogCard post={post} />
+        </div>
       ))}
       {page < totalPages && (
         <button
