@@ -6,7 +6,10 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities, search_attractions
-from .serializers import BlogPostCreateSerializer
+from .serializers import BlogPostCreateSerializer, CommentCreateSerializer, BlogPostListSerializer
+from .models import BlogPost, Comment
+from rest_framework.permissions import AllowAny
+from .services.self_services import get_blogs, get_comments_helper
 
 @api_view(['POST'])
 def register_user(request):
@@ -130,13 +133,110 @@ def blog_details_view(request, blog_id):
         serializer = BlogPostCreateSerializer(blog, data=request.data, partial=(request.method == 'PATCH'))
         if serializer.is_valid():
             serializer.save()
-            
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         blog.delete()
         return Response({"message": "Blog post deleted."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
+def post_or_get_comment(request, blog_id):
+    try:
+        blog = BlogPost.objects.get(id=blog_id)
+    except BlogPost.DoesNotExist:
+        return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'POST':
+        serializer = CommentCreateSerializer(data=request.data, context={'request': request, 'blog_post': blog})
+        if not serializer.is_valid():
+            return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        comment = serializer.save()
+
+        return Response({
+            "id": comment.id,
+            "content": comment.content,
+            "created_at": comment.created_at,
+            "updated_at": comment.updated_at,
+            "author_id": request.user.id,
+            "author_username": request.user.username,
+        }, status=status.HTTP_201_CREATED)
+    elif request.method == 'GET':
+        page = request.query_params.get('page', 1)
+        per_page = request.query_params.get('per_page', 15)
+        data = get_comments_helper(blog_id, page=page, per_page=per_page)
+        if data is None:
+            return Response(
+                {"error": "Could not retrieve comments."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        serializer = CommentCreateSerializer(data["results"], many=True, context={'request': request})
+        response_payload = {
+            "results": serializer.data,
+            "page": data["page"],
+            "per_page": data["per_page"],
+            "total_count": data["total_count"],
+            "total_pages": data["total_pages"],
+        }
+        return Response(response_payload, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def increment_reads(request, blog_id):
+    try:
+        blog = BlogPost.objects.get(id=blog_id)
+        blog.reads += 1
+        blog.save()
+        return Response({"message": "Reads incremented successfully."}, status=status.HTTP_200_OK)
+    except BlogPost.DoesNotExist:
+        return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def increment_likes(request, blog_id):
+    try:
+        blog = BlogPost.objects.get(id=blog_id)
+        blog.likes += 1
+        blog.save()
+        return Response({"message": "Likes incremented successfully."}, status=status.HTTP_200_OK)
+    except BlogPost.DoesNotExist:
+        return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_blogs(request):
+
+    page = request.query_params.get('page', 1)
+    per_page = request.query_params.get('per_page', 15)
+
+
+    data = get_blogs(page=page, per_page=per_page)
+    if data is None:
+        return Response(
+            {"error": "Could not retrieve blog list."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+    serializer = BlogPostListSerializer(data["results"], many=True, context={'request': request})
+
+
+    response_payload = {
+        "results":      serializer.data,
+        "page":         data["page"],
+        "per_page":     data["per_page"],
+        "total_count":  data["total_count"],
+        "total_pages":  data["total_pages"],
+    }
+    return Response(response_payload, status=status.HTTP_200_OK)
 
 
 

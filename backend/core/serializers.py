@@ -37,6 +37,31 @@ class BlogPostCreateSerializer(serializers.ModelSerializer):
         return BlogPost.objects.create(user=user, **validated_data)
 
 
+class BlogPostListSerializer(serializers.ModelSerializer):
+    author_username = serializers.CharField(source='user.username', read_only=True)
+    excerpt = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            'id',
+            'slug',
+            'title',
+            'excerpt',
+            'location',
+            'author_username',
+            'reads',
+            'likes',
+            'created_at',
+        ]
+
+    def get_excerpt(self, obj):
+        # show the first 100 characters of content
+        text = obj.content or ''
+        return text[:100] + '...' if len(text) > 100 else text
+
+
+
 class CommentCreateSerializer(serializers.ModelSerializer):
 
     content = serializers.CharField(

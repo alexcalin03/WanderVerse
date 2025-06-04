@@ -1,9 +1,10 @@
 from core.models import BlogPost, Comment
 
 
-def get_blogs(page=1, per_page=15):
+def get_blogs(page=1, per_page=5):
     try:
         page = int(page)
+        per_page = int(per_page)
         if page < 1:
             page = 1
         start = (page - 1) * per_page
@@ -47,10 +48,11 @@ def increment_likes(blog_id):
 
 
 
-def get_comments(blog_id, page=1, per_page=15):
+def get_comments_helper(blog_id, page=1, per_page=15):
     try:
         blog = BlogPost.objects.get(id=blog_id)
         page = int(page)
+        per_page = int(per_page)
         if page < 1:
             page = 1
         start = (page - 1) * per_page
