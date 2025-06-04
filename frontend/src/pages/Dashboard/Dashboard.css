@@ -1,9 +1,10 @@
 .content{
-    margin-top: 100px;
+    margin-top: 0;
+    padding-top: 60px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 60vh;
+    justify-content: flex-start;
+    height: auto;
     width: 100%;
     flex-direction: column;
 }

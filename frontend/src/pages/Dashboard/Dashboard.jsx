@@ -3,6 +3,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import FlightForm from '../../components/FlightForm/FlightForm';
 import HotelForm from '../../components/HotelForm/HotelForm';
 import AttractionForm from '../../components/AttractionForm/AttractionForm';
+import BlogFeed from '../../components/BlogFeed/BlogFeed';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -11,7 +12,8 @@ const Dashboard = () => {
     const [hasSearched, setHasSearched] = useState({
         stays: false,
         flights: false,
-        attractions: false
+        attractions: false,
+        blogs: false
     });
 
     const handleSectionChange = (section) => {
@@ -30,7 +32,8 @@ const Dashboard = () => {
     const messages = {
         stays: "Search for the best hotel deals on WanderVerse!",
         flights: "Search for the best flight deals on WanderVerse!",
-        attractions: "Search for the best attractions on WanderVerse!"
+        attractions: "Search for the best attractions on WanderVerse!",
+        blogs: "Explore the best travel blogs on WanderVerse!"
     };
 
     return (
@@ -59,6 +62,15 @@ const Dashboard = () => {
                             <div className="center-message">{messages.attractions}</div>
                         )}
                         <AttractionForm onSearch={() => handleSearch('attractions')} />
+                    </>
+                )}
+
+                {activeSection === 'blogs' && (
+                    <>
+                        {!hasSearched.blogs && (
+                            <div className="center-message">{messages.blogs}</div>
+                        )}
+                        <BlogFeed onSearch={() => handleSearch('blogs')} />
                     </>
                 )}
             </div>

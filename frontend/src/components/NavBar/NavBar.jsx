@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './NavBar.css'; // Add styles here or inline
+import './NavBar.css'; 
 import { logoutUser } from '../../api/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ const NavBar = ({ onSectionChange }) => {
 
     const handleSectionClick = (section) => {
         setActiveSection(section);
-        onSectionChange(section); // Notify parent component about the section change
+        onSectionChange(section); 
     };
 
     const handleClickOutside = (event) => {
@@ -72,6 +72,12 @@ const NavBar = ({ onSectionChange }) => {
                     onClick={() => handleSectionClick('attractions')}
                 >
                     Attractions
+                </button>
+                <button
+                    className={`nav-btn ${activeSection === 'blogs' ? 'active' : ''}`}
+                    onClick={() => handleSectionClick('blogs')}
+                >
+                    Blogs
                 </button>
             </div>
 
