@@ -1,4 +1,101 @@
+.blog-feed-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
 
+.share-experience-button {
+  position: fixed;
+  top: 80px; /* Increased from 20px to 80px to move it down below the navbar */
+  left: 20px;
+  z-index: 100;
+}
+
+.my-posts {
+  position: fixed;
+  top: 80px; /* Same height as share experience button */
+  right: 20px;
+  z-index: 100;
+}
+
+.favourites-button {
+  position: fixed;
+  top: 140px; /* Position below the My Posts button */
+  right: 20px;
+  z-index: 100;
+}
+
+.share-experience-button button {
+  padding: 12px 20px;
+  background-color: rgb(4, 173, 138);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 20px;
+}
+
+.share-experience-button button:hover {
+  background-color: rgb(4, 173, 138);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.my-posts button {
+  padding: 12px 20px;
+  background-color: rgb(4, 173, 138);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 20px;
+}
+
+.my-posts button:hover {
+  background-color: rgb(4, 173, 138);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.my-posts button.active {
+  background-color: white;
+  color: rgb(4, 173, 138);
+  border: 2px solid rgb(4, 173, 138);
+}
+
+.favourites-button button {
+  padding: 12px 20px;
+  background-color: rgb(4, 173, 138);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 20px;
+}
+
+.favourites-button button:hover {
+  background-color: rgb(4, 173, 138);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.favourites-button button.active {
+  background-color: white;
+  color: rgb(4, 173, 138);
+  border: 2px solid rgb(4, 173, 138);
+}
 
 .blog-feed {
     display: flex;
@@ -16,17 +113,17 @@
   .load-more-btn {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #007bff;
+    background-color: rgb(4, 173, 138);
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 20px;
     cursor: pointer;
     margin: 20px auto;
     display: block;
   }
   
   .load-more-btn:hover {
-    background-color: #0056b3;
+    background-color: rgb(4, 173, 138);
   }
   
   .load-more-btn:disabled {

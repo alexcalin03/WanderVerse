@@ -42,6 +42,7 @@ const NavBar = ({ onSectionChange }) => {
             setError(err.message);
         }
     }
+         
 
 
 

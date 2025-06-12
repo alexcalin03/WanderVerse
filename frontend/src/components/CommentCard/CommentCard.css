@@ -1,15 +1,53 @@
 .comment-card {
     width: 100%;
-    padding: 8px 0;
+    padding: 12px 0;
     border-bottom: 1px solid #ccc;
+  }
+  
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
   }
   
   .comment-author {
     font-weight: bold;
-    margin-bottom: 4px;
   }
   
   .comment-body {
     white-space: pre-wrap;
+  }
+  
+  .delete-comment-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  
+  .delete-comment-btn:hover {
+    opacity: 1;
+  }
+  
+  .delete-comment-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  .delete-icon {
+    width: 16px;
+    height: 16px;
+    stroke: rgb(4, 173, 138);
+    transition: transform 0.2s;
+  }
+  
+  .delete-comment-btn:hover .delete-icon {
+    transform: scale(1.1);
   }
   

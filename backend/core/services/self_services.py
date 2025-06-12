@@ -1,16 +1,27 @@
 from core.models import BlogPost, Comment
 
 
-def get_blogs(page=1, per_page=5):
+def get_blogs(page=1, per_page=5, username=None):
     try:
         page = int(page)
         per_page = int(per_page)
         if page < 1:
             page = 1
+        
+        # Filter by username if provided
+        if username and username.lower() != 'null':
+            blogs_query = BlogPost.objects.filter(user__username=username).order_by('-created_at')
+        else:
+            blogs_query = BlogPost.objects.all().order_by('-created_at')
+            
+        # Get total count for pagination
+        total_count = blogs_query.count()
+        
+        # Apply pagination
         start = (page - 1) * per_page
         end = start + per_page
-        blogs = BlogPost.objects.all().order_by('-created_at')[start:end]
-        total_count = BlogPost.objects.count()
+        blogs = blogs_query[start:end]
+        
         total_pages = (total_count + per_page - 1) // per_page
         return {
             "results": blogs,

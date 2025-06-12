@@ -1,8 +1,8 @@
 from django.urls import path
 from .views import list_blogs, register_user, logout_user, flight_search_view, airport_autocomplete_view, hotel_search_view, city_autocomplete_view
 from .views import attractions_search_view, post_blog_view, blog_details_view
-from .views import increment_reads, like_post, post_or_get_comment
-
+from .views import increment_reads, like_post, post_or_get_comment, list_favourites, comment_detail
+from .views import update_user, update_user_password
 urlpatterns = [
     path('register/', register_user),
     
@@ -30,4 +30,11 @@ urlpatterns = [
 
     path('blog/<int:blog_id>/comments/', post_or_get_comment, name='post_comment'),
 
+    path('blog/<int:blog_id>/comments/<int:comment_id>/', comment_detail, name='comment_detail'),
+
+    path('favourites/', list_favourites, name='list_favourites'),
+
+    path('update_user/', update_user, name='update_user'),
+
+    path('update_user_password/', update_user_password, name='update_user_password'),
 ]

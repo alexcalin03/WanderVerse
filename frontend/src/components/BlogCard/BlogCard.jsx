@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BlogCard.css';
-import {  increment_reads } from '../../api/internalAPI';
+import { increment_reads } from '../../api/internalAPI';
 import { ReactComponent as HeartIcon } from '../../assets/heart.svg';
 import { ReactComponent as EyeIcon } from '../../assets/eye.svg';
 
 const BlogCard = ({ post, onReadMore }) => {
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [isLiked, setIsLiked] = useState(post.is_liked);
+  const [currentUsername, setCurrentUsername] = useState('');
+  
+  // Get current username from JWT token or localStorage
+  useEffect(() => {
+    // Try to get the username from localStorage
+    const username = localStorage.getItem('username');
+    if (username) {
+      setCurrentUsername(username);
+    }
+  }, []);
 
 
 
@@ -22,7 +32,9 @@ const BlogCard = ({ post, onReadMore }) => {
   return (
     <div className="blog-card">
       <div className="blog-card-header">
-        <div className="blog-card-author">{post.author_username}</div>
+        <div className="blog-card-author">
+          {currentUsername && post.author_username === currentUsername ? 'Me' : post.author_username}
+        </div>
         <div className="blog-card-location">{post.location}</div>
       </div>
 

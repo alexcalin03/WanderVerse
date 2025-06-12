@@ -30,6 +30,25 @@ def logout_user(request):
     return Response({'message':'User logged out'}, status=status.HTTP_200_OK)
 
 
+@api_view(['PATCH'])
+def update_user(request):
+    user = request.user
+    data = request.data
+    user.username = data.get('username', user.username)
+    user.email = data.get('email', user.email)
+    user.save()
+    return Response({'message':'User updated'}, status=status.HTTP_200_OK)
+
+@api_view(['PUT'])
+def update_user_password(request):
+    user = request.user
+    data = request.data
+    user.set_password(data.get('password'))
+    user.save()
+    return Response({'message':'User password updated'}, status=status.HTTP_200_OK)
+
+
+
 def flight_search_view(request):
     origin = request.GET.get('origin', 'MAD')
     destination = request.GET.get('destination', 'ATH')
@@ -108,7 +127,7 @@ def post_blog_view(request):
         "content": blog_post.content,
         "location": blog_post.location,
         "reads": blog_post.reads,
-        "likes": blog_post.likes,
+        "likes": blog_post.liked_by.count(),
         "created_at": blog_post.created_at,
         "updated_at": blog_post.updated_at,
         "author_id": request.user.id,
@@ -144,11 +163,26 @@ def blog_details_view(request, blog_id):
         }, status=status.HTTP_200_OK)
 
     elif request.method in ['PUT', 'PATCH']:
+      
+        if blog.user != request.user:
+            return Response(
+                {"error": "You don't have permission to edit this blog post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        
         serializer = BlogPostCreateSerializer(blog, data=request.data, partial=(request.method == 'PATCH'))
+        
         if serializer.is_valid():
-            serializer.save()
-
-            return Response(serializer.data)
+            updated_blog = serializer.save()
+            
+            
+            return Response({
+                "message": "Blog post updated successfully.",
+                "blog": serializer.data,
+                "likes_count": updated_blog.liked_by.count(),
+            }, status=status.HTTP_200_OK)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
@@ -258,12 +292,13 @@ def like_post(request, blog_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_blogs(request):
-
+    # Get query parameters
     page = request.query_params.get('page', 1)
     per_page = request.query_params.get('per_page', 15)
-
-
-    data = get_blogs(page=page, per_page=per_page)
+    username = request.query_params.get('username', None)
+    
+    # Get blogs with optional username filtering
+    data = get_blogs(page=page, per_page=per_page, username=username)
     if data is None:
         return Response(
             {"error": "Could not retrieve blog list."},
@@ -284,8 +319,41 @@ def list_blogs(request):
     return Response(response_payload, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_favourites(request):
+    user = request.user
+    favourite_blogs = BlogPost.objects.filter(liked_by=user)
+    serializer = BlogPostListSerializer(favourite_blogs, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
+@api_view(['GET', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def comment_detail(request, blog_id, comment_id):
+    try:
+        # Check if blog exists
+        blog = BlogPost.objects.get(id=blog_id)
+    except BlogPost.DoesNotExist:
+        return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+    try:
+        # Check if comment exists and belongs to the specified blog
+        comment = Comment.objects.get(id=comment_id, blog_post=blog)
+    except Comment.DoesNotExist:
+        return Response({"error": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = CommentCreateSerializer(comment, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    elif request.method == 'DELETE':
+        # Check if the authenticated user is the author of the comment
+        if comment.user != request.user:
+            return Response(
+                {"error": "You don't have permission to delete this comment."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+    
+        comment.delete()
+        return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)

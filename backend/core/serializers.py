@@ -85,11 +85,14 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         trim_whitespace=False,
         help_text="Required."
     )
-
+    author_username = serializers.CharField(source='user.username', read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['id', 'content', 'author_username', 'created_at', 'updated_at']
 
     def validate_content(self, value):
         if len(value.strip()) < 1:

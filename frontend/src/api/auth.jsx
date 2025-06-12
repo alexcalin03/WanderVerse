@@ -67,3 +67,50 @@ export async function signUpUser(username, password, email) {
     }
 }
 
+export async function updateUser(username, email) {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}/update_user/`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Token ${token}`
+            },
+            body: JSON.stringify({ username, email }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to update user.");
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function updateUserPassword(password) {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}/update_user_password/`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Token ${token}`
+            },
+            body: JSON.stringify({ password }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to update user password.");
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+}
+
+

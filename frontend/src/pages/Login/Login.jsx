@@ -16,7 +16,9 @@ const Login = () => {
         try {
             const data = await loginUser(username, password);
             localStorage.setItem('authToken', data.token);
-            navigate('/dashboard');
+            // Store username in localStorage so we can use it in BlogCard
+            localStorage.setItem('username', username);
+            navigate('/');
         } catch (err) {
             setError(err.message);
         }
