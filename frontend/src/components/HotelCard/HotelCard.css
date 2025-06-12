@@ -57,3 +57,26 @@
     font-size: 14px;
     color: black;
 }
+
+/* Book Hotel Button */
+.book-hotel-btn {
+    background-color: rgb(4, 173, 138);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.book-hotel-btn:hover {
+    background-color: rgb(3, 145, 115);
+    transform: translateY(-1px);
+}
+
+.book-hotel-btn:active {
+    transform: translateY(1px);
+}

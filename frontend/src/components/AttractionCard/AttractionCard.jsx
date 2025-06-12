@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './AttractionCard.css';
 
 const AttractionCard = ({ attraction }) => {
+    // This function creates a Google search URL if the original booking link fails
+    const generateFallbackLink = (attractionName) => {
+        // Create a Google search query for the attraction
+        const searchQuery = encodeURIComponent(`${attractionName} book tickets`);
+        return `https://www.google.com/search?q=${searchQuery}`;
+    };
     return (
         <div className="attraction-card">
             {/* Left Section - Attraction Image */}
@@ -27,12 +33,19 @@ const AttractionCard = ({ attraction }) => {
 
                 {/* See Details Button */}
                 <a 
-                    href={attraction.bookingLink} 
+                    href={attraction.bookingLink || generateFallbackLink(attraction.name)} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="see-details-btn"
+                    onClick={() => {
+                        console.log('Booking link clicked:', attraction.bookingLink);
+                        // If the link is N/A or empty, use the fallback
+                        if (!attraction.bookingLink || attraction.bookingLink === 'N/A') {
+                            console.log('Using fallback link instead');
+                        }
+                    }}
                 >
-                    See Details
+                    Find Tickets
                 </a>
             </div>
         </div>

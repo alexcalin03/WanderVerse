@@ -6,10 +6,12 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .services.amadeus_services import search_flights, search_airports, search_hotels, search_cities, search_attractions
-from .serializers import BlogPostCreateSerializer, CommentCreateSerializer, BlogPostListSerializer
-from .models import BlogPost, Comment
+from .serializers import (BlogPostCreateSerializer, CommentCreateSerializer, 
+                       BlogPostListSerializer, UserTravelPreferencesSerializer)
+from .models import BlogPost, Comment, UserTravelPreferences
 from rest_framework.permissions import AllowAny
 from .services.self_services import get_blogs, get_comments_helper
+from .services.openai_services import generate_travel_suggestions
 
 @api_view(['POST'])
 def register_user(request):
@@ -43,9 +45,43 @@ def update_user(request):
 def update_user_password(request):
     user = request.user
     data = request.data
-    user.set_password(data.get('password'))
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    if not current_password or not new_password:
+        return Response(
+            {'error': 'Both current password and new password are required'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Verify that the current password is correct
+    if not user.check_password(current_password):
+        return Response(
+            {'error': 'Current password is incorrect'}, 
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # Set the new password
+    user.set_password(new_password)
     user.save()
-    return Response({'message':'User password updated'}, status=status.HTTP_200_OK)
+    
+    return Response({'message':'User password updated successfully'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    user = request.user
+    # Create a redacted password hash for display purposes only
+    # This isn't the actual hash but provides visual feedback that a hash exists
+    password_hash = '********'
+    
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'password_hash': password_hash  # Safe representation for UI
+    }, status=status.HTTP_200_OK)
 
 
 
@@ -354,6 +390,50 @@ def comment_detail(request, blog_id, comment_id):
                 {"error": "You don't have permission to delete this comment."},
                 status=status.HTTP_403_FORBIDDEN
             )
-    
         comment.delete()
-        return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
+        return Response({"message": "Comment deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def user_travel_preferences(request):
+    try:
+        # Get preferences or create if they don't exist
+        preferences, created = UserTravelPreferences.objects.get_or_create(user=request.user)
+        
+        if request.method == 'GET':
+            serializer = UserTravelPreferencesSerializer(preferences)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        elif request.method in ['PUT', 'PATCH']:
+            # For PATCH, partial=True allows partial updates
+            partial = request.method == 'PATCH'
+            serializer = UserTravelPreferencesSerializer(preferences, data=request.data, partial=partial)
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def suggestions(request):
+    """
+    Get personalized travel destination suggestions based on user preferences using OpenAI.
+    """
+    try:
+        # Get the user's preferences
+        preferences, created = UserTravelPreferences.objects.get_or_create(user=request.user)
+        
+        # Use the OpenAI service to generate travel suggestions
+        suggestions_data = generate_travel_suggestions(preferences)
+        
+        return Response(suggestions_data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

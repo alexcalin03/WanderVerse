@@ -79,15 +79,24 @@ export const fetchAttractions = async (latitude, longitude) => {
         const response = await axios.get(`${API_BASE}/attractions/`, {
             params: { latitude, longitude }
         });
-        return response.data.map(item => ({
-            name: item.name,
-            description : item.short_description,
-            rating: item.rating,
-            latitude: item.latitude,
-            longitude: item.longitude,
-            image: item.image,
-            booking_link: item.booking_link
-        }));
+        console.log('API response for attractions:', response.data);
+        
+        return response.data.map(item => {
+            // Debug what's coming back
+            console.log('Single attraction data:', item);
+            
+            return {
+                name: item.name,
+                description: item.short_description,
+                rating: item.rating,
+                latitude: item.latitude,
+                longitude: item.longitude,
+                image: item.image,
+                // Make sure we're getting the correct property name
+                // Try both property name formats to handle any backend formats
+                bookingLink: item.bookingLink || item.booking_link || ''
+            };
+        });
     } catch (error) {
         console.error('Error fetching attractions:', error);
         throw error;

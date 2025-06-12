@@ -8,13 +8,14 @@ import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 
 
-const HotelForm = ({ onSearch }) => {
-    const [cityCode, setCityCode] = useState('');
-    const [displayValue, setDisplayValue] = useState('');
-    const [checkInDate, setCheckInDate] = useState('');
-    const [checkOutDate, setCheckOutDate] = useState('');
-    const [adults, setAdults] = useState(1);
-    const [results, setResults] = useState([]);
+const HotelForm = ({ onSearch, initialState, onStateChange }) => {
+    // Initialize state from initialState if provided, otherwise use defaults
+    const [cityCode, setCityCode] = useState(initialState?.cityCode || '');
+    const [displayValue, setDisplayValue] = useState(initialState?.displayValue || '');
+    const [checkInDate, setCheckInDate] = useState(initialState?.checkInDate || '');
+    const [checkOutDate, setCheckOutDate] = useState(initialState?.checkOutDate || '');
+    const [adults, setAdults] = useState(initialState?.adults || 1);
+    const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -57,21 +58,51 @@ const HotelForm = ({ onSearch }) => {
 
 
 
+    // Save current form state whenever any input changes
+    useEffect(() => {
+        if (onStateChange) {
+            const currentState = {
+                cityCode,
+                displayValue,
+                checkInDate,
+                checkOutDate,
+                adults,
+                results
+            };
+            onStateChange(currentState);
+        }
+    }, [cityCode, displayValue, checkInDate, checkOutDate, adults, results]);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!cityCode) {
             alert("Please select a city from the suggestions.");
             return;
         }
+        
+        // Call onSearch immediately when form is submitted
+        if(onSearch) onSearch();
+        
         setLoading(true);
         setResults([]);  
         try {
             const data = await fetchHotels(cityCode, checkInDate, checkOutDate, adults);
             setResults(data);
+            
+            // Save the final state with results
+            if (onStateChange) {
+                onStateChange({
+                    cityCode,
+                    displayValue,
+                    checkInDate,
+                    checkOutDate,
+                    adults,
+                    results: data
+                });
+            }
         } catch (error) {
             console.error('Error fetching hotels:', error);
         }
-        if(onSearch) onSearch();
         setLoading(false);
     };
 

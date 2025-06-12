@@ -8,14 +8,15 @@ import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 
 
-const FlightForm = () => {
-    const [tripType, setTripType] = useState('one-way');
-    const [origin, setOrigin] = useState('');
-    const [destination, setDestination] = useState('');
-    const [departureDate, setDepartureDate] = useState('');
-    const [returnDate, setReturnDate] = useState('');
-    const [adults, setAdults] = useState(1);
-    const [results, setResults] = useState([]);
+const FlightForm = ({ onSearch, initialState, onStateChange }) => {
+    // Initialize state from initialState if provided, otherwise use defaults
+    const [tripType, setTripType] = useState(initialState?.tripType || 'one-way');
+    const [origin, setOrigin] = useState(initialState?.origin || '');
+    const [destination, setDestination] = useState(initialState?.destination || '');
+    const [departureDate, setDepartureDate] = useState(initialState?.departureDate || '');
+    const [returnDate, setReturnDate] = useState(initialState?.returnDate || '');
+    const [adults, setAdults] = useState(initialState?.adults || 1);
+    const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -46,12 +47,45 @@ const FlightForm = () => {
         }
     }, []);
 
+    // Save current form state whenever any input changes
+    useEffect(() => {
+        if (onStateChange) {
+            const currentState = {
+                tripType,
+                origin,
+                destination,
+                departureDate,
+                returnDate,
+                adults,
+                results
+            };
+            onStateChange(currentState);
+        }
+    }, [tripType, origin, destination, departureDate, returnDate, adults, results, onStateChange]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Call onSearch immediately when form is submitted
+        if(onSearch) onSearch();
+        
         setLoading(true);
         try {
             const data = await fetchFlights(origin, destination, departureDate, tripType === 'round-trip' ? returnDate : null, adults);
             setResults(data);
+            
+            // Save the final state with results
+            if (onStateChange) {
+                onStateChange({
+                    tripType,
+                    origin,
+                    destination,
+                    departureDate,
+                    returnDate,
+                    adults,
+                    results: data
+                });
+            }
         } catch (error) {
             console.error('Error fetching flights:', error);
         }

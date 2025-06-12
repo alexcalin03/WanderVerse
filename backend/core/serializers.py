@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import BlogPost, Comment
+from django.contrib.auth.models import User
+from .models import BlogPost, Comment, UserTravelPreferences
 
 class BlogPostCreateSerializer(serializers.ModelSerializer):
     title = serializers.CharField(
@@ -106,3 +107,13 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         blog_post = self.context['blog_post']
         return Comment.objects.create(user=user, blog_post=blog_post, **validated_data)
 
+
+class UserTravelPreferencesSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    
+    class Meta:
+        model = UserTravelPreferences
+        fields = ['id', 'username', 'preferred_countries', 'preferred_activities', 
+                  'preferred_climate', 'preferred_budget_range', 'travel_style', 
+                  'created_at', 'updated_at']
+        read_only_fields = ['id', 'username', 'created_at', 'updated_at']

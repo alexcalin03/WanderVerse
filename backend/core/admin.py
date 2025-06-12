@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost, Comment
+from .models import BlogPost, Comment, UserTravelPreferences
 
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
@@ -18,3 +18,10 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "blog_post", "created_at")
     search_fields = ("content", "user__username", "blog_post__title")
     list_filter  = ("created_at",)
+
+@admin.register(UserTravelPreferences)
+class UserTravelPreferencesAdmin(admin.ModelAdmin):
+    list_display = ("user", "preferred_countries", "preferred_activities", "preferred_climate", "preferred_budget_range", "travel_style", "created_at", "updated_at")
+    search_fields = ("user__username", "preferred_countries", "preferred_activities", "preferred_climate", "preferred_budget_range")
+    list_filter  = ("created_at", "updated_at")
+

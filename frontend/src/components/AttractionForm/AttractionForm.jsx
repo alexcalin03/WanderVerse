@@ -7,12 +7,13 @@ import AttractionCard from '../AttractionCard/AttractionCard';
 import Loading from '../Loading/Loading';
 import './AttractionForm.css';
 
-const AttractionForm = () => {
-    const [cityCode, setCityCode] = useState('');
-    const [displayValue, setDisplayValue] = useState('');
-    const [latitude, setLatitude] = useState(null);
-    const [longitude, setLongitude] = useState(null);
-    const [results, setResults] = useState([]);
+const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
+    // Initialize state from initialState if provided, otherwise use defaults
+    const [cityCode, setCityCode] = useState(initialState?.cityCode || '');
+    const [displayValue, setDisplayValue] = useState(initialState?.displayValue || '');
+    const [latitude, setLatitude] = useState(initialState?.latitude || null);
+    const [longitude, setLongitude] = useState(initialState?.longitude || null);
+    const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -47,8 +48,26 @@ const AttractionForm = () => {
         }
     }, []);
 
+    // Save current form state whenever any input changes
+    useEffect(() => {
+        if (onStateChange) {
+            const currentState = {
+                cityCode,
+                displayValue,
+                latitude,
+                longitude,
+                results
+            };
+            onStateChange(currentState);
+        }
+    }, [cityCode, displayValue, latitude, longitude, results, onStateChange]);
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
+        
+        // Call onSearch immediately when form is submitted
+        if(onSearch) onSearch();
+        
         setLoading(true);
         setResults([]);
 
@@ -62,6 +81,17 @@ const AttractionForm = () => {
             console.log("Fetching attractions for:", { latitude, longitude });
             const data = await fetchAttractions(latitude, longitude);
             setResults(data);
+            
+            // Save the final state with results
+            if (onStateChange) {
+                onStateChange({
+                    cityCode,
+                    displayValue,
+                    latitude,
+                    longitude,
+                    results: data
+                });
+            }
         } catch (error) {
             console.error("Attractions API Error:", error);
         }

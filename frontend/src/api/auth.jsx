@@ -90,7 +90,7 @@ export async function updateUser(username, email) {
     }
 }
 
-export async function updateUserPassword(password) {
+export async function updateUserPassword(currentPassword, newPassword) {
     try {
         const token = localStorage.getItem('authToken');
         const response = await fetch(`${API_BASE}/update_user_password/`, {
@@ -99,7 +99,10 @@ export async function updateUserPassword(password) {
                 "Content-Type": "application/json",
                 "Authorization": `Token ${token}`
             },
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({ 
+                current_password: currentPassword,
+                new_password: newPassword 
+            }),
         });
 
         if (!response.ok) {

@@ -1,43 +1,154 @@
-// src/pages/Dashboard/Dashboard.js
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import NavBar from '../../components/NavBar/NavBar';
 import FlightForm from '../../components/FlightForm/FlightForm';
 import HotelForm from '../../components/HotelForm/HotelForm';
 import AttractionForm from '../../components/AttractionForm/AttractionForm';
 import BlogFeed from '../../components/BlogFeed/BlogFeed';
+import TravelSuggestions from '../../components/TravelSuggestions/TravelSuggestions';
+import { SuggestionsProvider } from '../../context/SuggestionsContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('stays');
+  
+
+  const [staysSearching, setStaysSearching] = useState(false);
+  const [flightsSearching, setFlightsSearching] = useState(false);
+  const [attractionsSearching, setAttractionsSearching] = useState(false);
+
+
+  const [staysState, setStaysState] = useState(null);
+  const [flightsState, setFlightsState] = useState(null);
+  const [attractionsState, setAttractionsState] = useState(null);
+
+
+  const isSearching = () => {
+    switch (activeSection) {
+      case 'stays': return staysSearching;
+      case 'flights': return flightsSearching;
+      case 'attractions': return attractionsSearching;
+      default: return false;
+    };
+  };
+
+
+  const setSearching = (value) => {
+    switch (activeSection) {
+      case 'stays': setStaysSearching(value); break;
+      case 'flights': setFlightsSearching(value); break;
+      case 'attractions': setAttractionsSearching(value); break;
+    };
+  };
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
   };
 
-  const handleSearch = (section) => {
+  const handleSearch = (section, suggestion = null) => {
+    if (section === 'stays') setStaysSearching(true);
+    else if (section === 'flights') setFlightsSearching(true);
+    else if (section === 'attractions') setAttractionsSearching(true);
+    
+    console.log('Suggestion selected:', suggestion);
+    // TODO: pre-fill forms based on suggestion
+  };
+  
+  const saveFormState = (sectionName, formData) => {
+    switch (sectionName) {
+      case 'stays': setStaysState(formData); break;
+      case 'flights': setFlightsState(formData); break;
+      case 'attractions': setAttractionsState(formData); break;
+    };
   };
 
   return (
     <div>
       <NavBar activeSection={activeSection} onSectionChange={handleSectionChange} />
+      <SuggestionsProvider>
+        <div className="content">
 
-      <div className="content">
-        {activeSection === 'stays' && (
-          <HotelForm onSearch={() => handleSearch('stays')} />
-        )}
+          {activeSection === 'stays' && (
+            <>
+              {!staysSearching && (
+                <>
+                  <TravelSuggestions onSearch={handleSearch} section="stays" />
+                  <div className="section-divider"></div>
+                </>
+              )}
+              
+              {staysSearching && (
+                <button className="back-to-suggestions" onClick={() => setStaysSearching(false)}>
+                  ← Back to Suggestions
+                </button>
+              )}
+              
+              <div className="search-section">
+                {!staysSearching && <h2 className="section-title">Search for Accommodations</h2>}
+                <HotelForm 
+                  onSearch={() => setStaysSearching(true)} 
+                  initialState={staysState} 
+                  onStateChange={(state) => setStaysState(state)} />
+              </div>
+            </>
+          )}
 
-        {activeSection === 'flights' && (
-          <FlightForm onSearch={() => handleSearch('flights')} />
-        )}
+          {activeSection === 'flights' && (
+            <>
+              {!flightsSearching && (
+                <>
+                  <TravelSuggestions onSearch={handleSearch} section="flights" />
+                  <div className="section-divider" />
+                </>
+              )}
+              
+              {flightsSearching && (
+                <button className="back-to-suggestions" onClick={() => setFlightsSearching(false)}>
+                  ← Back to Suggestions
+                </button>
+              )}
+              
+              <div className="search-section">
+                {!flightsSearching && <h2 className="section-title">Search for Flights</h2>}
+                <FlightForm 
+                  onSearch={() => setFlightsSearching(true)}
+                  initialState={flightsState}
+                  onStateChange={(state) => setFlightsState(state)} />
+              </div>
+            </>
+          )}
 
-        {activeSection === 'attractions' && (
-          <AttractionForm onSearch={() => handleSearch('attractions')} />
-        )}
+          {activeSection === 'attractions' && (
+            <>
+              {!attractionsSearching && (
+                <>
+                  <TravelSuggestions onSearch={handleSearch} section="attractions" />
+                  <div className="section-divider" />
+                </>
+              )}
+              
+              {attractionsSearching && (
+                <button className="back-to-suggestions" onClick={() => setAttractionsSearching(false)}>
+                  ← Back to Suggestions
+                </button>
+              )}
+              
+              <div className="search-section">
+                {!attractionsSearching && <h2 className="section-title">Search for Attractions</h2>}
+                <AttractionForm 
+                  onSearch={() => setAttractionsSearching(true)}
+                  initialState={attractionsState}
+                  onStateChange={(state) => setAttractionsState(state)} />
+              </div>
+            </>
+          )}
 
-        {activeSection === 'blogs' && (
-          <BlogFeed onSearch={() => handleSearch('blogs')} />
-        )}
-      </div>
+          {activeSection === 'blogs' && (
+            <BlogFeed onSearch={() => handleSearch('blogs')} />
+          )}
+
+        </div>
+      </SuggestionsProvider>
     </div>
   );
 };

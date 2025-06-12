@@ -48,3 +48,51 @@ class Comment(models.Model):
 
     def __str__(self):
         return (self.content[:47] + "...") if len(self.content) > 50 else self.content
+
+
+class UserTravelPreferences(models.Model):
+    """
+    Stores user travel preferences including preferred countries to visit
+    and other travel-related settings
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='travel_preferences')
+    
+    # Country preferences
+    preferred_countries = models.JSONField(
+        default=list,
+        help_text="List of country codes the user prefers to visit"
+    )
+    
+    # Travel preferences
+    preferred_activities = models.JSONField(
+        default=list, 
+        blank=True,
+        help_text="Types of activities the user enjoys (e.g., 'beach', 'hiking', 'city')"
+    )
+    preferred_climate = models.CharField(
+        max_length=50, 
+        blank=True, 
+        help_text="User's climate preference (e.g., 'warm', 'cold', 'tropical')"
+    )
+    preferred_budget_range = models.CharField(
+        max_length=20, 
+        blank=True, 
+        help_text="User's typical travel budget range (e.g., 'budget', 'mid-range', 'luxury')"
+    )
+    
+    # Travel style
+    travel_style = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="User's travel preferences like accommodation type, trip duration, etc."
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s Travel Preferences"
+    
+    class Meta:
+        verbose_name = "User Travel Preferences"
+        verbose_name_plural = "User Travel Preferences"

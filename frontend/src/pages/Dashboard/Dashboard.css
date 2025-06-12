@@ -7,7 +7,10 @@
     height: auto;
     width: 100%;
     flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
 }
+
 .center-message {
     font-size: 1.5rem;
     color: #444;
@@ -15,5 +18,38 @@
     text-align: center;
     display: flex;
     justify-content: center;
+}
 
+.search-section {
+    margin-top: 30px;
+    width: 100%;
+}
+
+.section-divider {
+    border-top: 1px solid #e0e0e0;
+    margin: 30px 0;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.back-to-suggestions {
+    background-color: rgb(4, 173, 138);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    margin-bottom: 20px;
+}
+
+.back-to-suggestions:hover {
+    background-color: rgb(3, 143, 114);
 }

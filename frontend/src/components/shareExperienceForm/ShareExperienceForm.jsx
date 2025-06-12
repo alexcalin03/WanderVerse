@@ -17,7 +17,7 @@ const ShareExperienceForm = ({ onClose, onSubmit, editMode = false, postData = n
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Add validation feedback for the user
+
     if (!title.trim()) {
       alert('Please enter a title');
       return;
@@ -28,14 +28,13 @@ const ShareExperienceForm = ({ onClose, onSubmit, editMode = false, postData = n
       return;
     }
     
-    // Ensure location has a comma
+
     let formattedLocation = location.trim();
     if (!formattedLocation) {
       alert('Please enter a location');
       return;
     }
     
-    // If location doesn't have a comma, add 'Unknown Country' after city name
     if (!formattedLocation.includes(',')) {
       formattedLocation = `${formattedLocation}, Unknown Country`;
     }

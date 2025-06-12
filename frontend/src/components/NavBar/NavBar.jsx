@@ -102,7 +102,7 @@ const NavBar = ({ onSectionChange }) => {
                     onMouseEnter={() => setShowDropdown(true)}
                     onMouseLeave={() => setShowDropdown(false)}
                     >
-                        <button className="dropdown-item">Account</button>
+                        <button className="dropdown-item" onClick={() => navigate('/account')}>Account</button>
                         <button className="dropdown-item" onClick={handleLogout}>Log Out</button>
                     </div>
                 )}
