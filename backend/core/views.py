@@ -12,6 +12,7 @@ from .models import BlogPost, Comment, UserTravelPreferences
 from rest_framework.permissions import AllowAny
 from .services.self_services import get_blogs, get_comments_helper
 from .services.openai_services import generate_travel_suggestions
+from .services.pexels_services import search_photos
 
 @api_view(['POST'])
 def register_user(request):
@@ -94,6 +95,13 @@ def flight_search_view(request):
 
     flight_data = search_flights(origin, destination, departure_date, return_date, adults)
 
+    # Check if the response contains an error
+    if isinstance(flight_data, dict) and 'error' in flight_data:
+        return JsonResponse({
+            "error": "Invalid travel data. Please try again with different search parameters.",
+            "details": flight_data['error']
+        }, status=400)
+
     return JsonResponse(flight_data, safe=False)
 
 
@@ -118,6 +126,13 @@ def hotel_search_view(request):
 
     hotel_data = search_hotels(city_code, check_in, check_out, adults)
 
+    # Check if the response contains an error
+    if isinstance(hotel_data, dict) and 'error' in hotel_data:
+        return JsonResponse({
+            "error": "Invalid hotel search data. Please try again with different search parameters.",
+            "details": hotel_data['error']
+        }, status=400)
+
     return JsonResponse(hotel_data, safe=False)
 
 
@@ -135,7 +150,15 @@ def attractions_search_view(request):
 
     if not latitude or not longitude:
         return JsonResponse({"error": "Missing required parameters: latitude and longitude"}, status=400)
+    
     attractions_data = search_attractions(latitude, longitude)
+
+    # Check if the response contains an error
+    if isinstance(attractions_data, dict) and 'error' in attractions_data:
+        return JsonResponse({
+            "error": "Invalid attractions search data. Please try again with different coordinates.",
+            "details": attractions_data['error']
+        }, status=400)
 
     return JsonResponse(attractions_data, safe=False)
 
@@ -437,3 +460,20 @@ def suggestions(request):
         
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def pexels_photos_view(request):
+    """Proxy endpoint for Pexels API to avoid CORS issues"""
+    query = request.GET.get('query')
+    per_page = request.GET.get('per_page', 15)
+    
+    if not query:
+        return Response({"error": "Query parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        photos_response = search_photos(query=query, per_page=int(per_page))
+        return Response(photos_response, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e), "photos": []}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -15,6 +15,8 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
     const [longitude, setLongitude] = useState(initialState?.longitude || null);
     const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     useEffect(() => {
         if ($ && $.fn.autocomplete) {
@@ -70,9 +72,11 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
         
         setLoading(true);
         setResults([]);
+        setError(null); // Clear any previous errors
+        setHasSearched(true); // Mark that a search has been performed
 
         if (!latitude || !longitude) {
-            console.error("Latitude and Longitude are required");
+            setError("Please select a city from the suggestions.");
             setLoading(false);
             return;
         }
@@ -80,20 +84,32 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
         try {
             console.log("Fetching attractions for:", { latitude, longitude });
             const data = await fetchAttractions(latitude, longitude);
-            setResults(data);
             
-            // Save the final state with results
-            if (onStateChange) {
-                onStateChange({
-                    cityCode,
-                    displayValue,
-                    latitude,
-                    longitude,
-                    results: data
-                });
+            // Check if the response contains an error
+            if (data && data.error) {
+                setError(data.error);
+                setResults([]);
+            } else if (Array.isArray(data) && data.length === 0) {
+                setError('No attractions found in this area. Please try a different city.');
+                setResults([]);
+            } else {
+                setResults(data);
+                
+                // Save the final state with results
+                if (onStateChange) {
+                    onStateChange({
+                        cityCode,
+                        displayValue,
+                        latitude,
+                        longitude,
+                        results: data
+                    });
+                }
             }
         } catch (error) {
             console.error("Attractions API Error:", error);
+            setError('An unexpected error occurred. Please try again later.');
+            setResults([]);
         }
         setLoading(false);
     };
@@ -117,12 +133,27 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
 
             {loading && <Loading />}
 
+            {/* Display error message if there's an error */}
+            {!loading && error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                    <p>Please try again with different search parameters.</p>
+                </div>
+            )}
             
-            {!loading && results.length > 0 && (
+            {/* Display search results */}
+            {!loading && !error && results.length > 0 && (
                 <div className="attraction-results">
                     {results.map((attraction, index) => (
                         <AttractionCard key={index} attraction={attraction} />
                     ))}
+                </div>
+            )}
+            
+            {/* No results but no error message - only show after a search */}
+            {!loading && !error && hasSearched && results.length === 0 && (
+                <div className="no-results-message">
+                    <p>No search results found. Please try different search parameters.</p>
                 </div>
             )}
         </>

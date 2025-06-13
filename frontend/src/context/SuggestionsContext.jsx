@@ -31,7 +31,14 @@ export const SuggestionsProvider = ({ children }) => {
         }
       });
 
-      setSuggestions(response.data.suggestions || []);
+      // Add unique IDs to each suggestion if they don't already have them
+      const suggestionsWithIds = (response.data.suggestions || []).map((suggestion, index) => ({
+        ...suggestion,
+        // Use existing id or create a unique one based on name, country and index
+        id: suggestion.id || `${suggestion.name}-${suggestion.country}-${index}`
+      }));
+      
+      setSuggestions(suggestionsWithIds);
       setLastFetched(new Date());
       setLoading(false);
       setError(null);
@@ -47,6 +54,19 @@ export const SuggestionsProvider = ({ children }) => {
     fetchSuggestions();
   }, []);
 
+  // Function to update a suggestion with its photo
+  const updateSuggestionWithPhoto = (suggestionId, photoUrl) => {
+    setSuggestions(prevSuggestions => 
+      prevSuggestions.map(suggestion => 
+        suggestion.id === suggestionId 
+          ? { ...suggestion, photoUrl } 
+          : suggestion
+      )
+    );
+  };
+  
+
+
   return (
     <SuggestionsContext.Provider 
       value={{
@@ -54,6 +74,7 @@ export const SuggestionsProvider = ({ children }) => {
         loading,
         error,
         fetchSuggestions,
+        updateSuggestionWithPhoto
       }}
     >
       {children}

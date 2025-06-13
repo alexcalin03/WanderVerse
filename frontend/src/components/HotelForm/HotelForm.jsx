@@ -17,6 +17,8 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
     const [adults, setAdults] = useState(initialState?.adults || 1);
     const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     useEffect(() => {
         if ($ && $.fn.autocomplete) {
@@ -76,7 +78,7 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!cityCode) {
-            alert("Please select a city from the suggestions.");
+            setError("Please select a city from the suggestions.");
             return;
         }
         
@@ -84,24 +86,39 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
         if(onSearch) onSearch();
         
         setLoading(true);
-        setResults([]);  
+        setResults([]);
+        setError(null); // Clear any previous errors
+        setHasSearched(true); // Mark that a search has been performed
+        
         try {
             const data = await fetchHotels(cityCode, checkInDate, checkOutDate, adults);
-            setResults(data);
             
-            // Save the final state with results
-            if (onStateChange) {
-                onStateChange({
-                    cityCode,
-                    displayValue,
-                    checkInDate,
-                    checkOutDate,
-                    adults,
-                    results: data
-                });
+            // Check if the response contains an error
+            if (data && data.error) {
+                setError(data.error);
+                setResults([]);
+            } else if (Array.isArray(data) && data.length === 0) {
+                setError('No hotels found matching your criteria. Please try different search parameters.');
+                setResults([]);
+            } else {
+                setResults(data);
+                
+                // Save the final state with results
+                if (onStateChange) {
+                    onStateChange({
+                        cityCode,
+                        displayValue,
+                        checkInDate,
+                        checkOutDate,
+                        adults,
+                        results: data
+                    });
+                }
             }
         } catch (error) {
             console.error('Error fetching hotels:', error);
+            setError('An unexpected error occurred. Please try again later.');
+            setResults([]);
         }
         setLoading(false);
     };
@@ -148,9 +165,30 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
         </div>
         <div className="hotel-results">
             {loading && <Loading />}
-            {!loading && results.length > 0 && results.map((hotel, index) => (
-                <HotelCard key={index} hotel={hotel} checkInDate={checkInDate} checkOutDate={checkOutDate} />
-            ))}
+            
+            {/* Display error message if there's an error */}
+            {!loading && error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                    <p>Please try again with different search parameters.</p>
+                </div>
+            )}
+            
+            {/* Display search results */}
+            {!loading && !error && results.length > 0 && (
+                <>
+                    {results.map((hotel, index) => (
+                        <HotelCard key={index} hotel={hotel} checkInDate={checkInDate} checkOutDate={checkOutDate} />
+                    ))}
+                </>
+            )}
+            
+            {/* No results but no error message - only show after a search */}
+            {!loading && !error && hasSearched && results.length === 0 && (
+                <div className="no-results-message">
+                    <p>No search results found. Please try different search parameters.</p>
+                </div>
+            )}
         </div>
         
    </> );

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import list_blogs, register_user, logout_user, flight_search_view, airport_autocomplete_view, hotel_search_view, city_autocomplete_view
 from .views import attractions_search_view, post_blog_view, blog_details_view
 from .views import increment_reads, like_post, post_or_get_comment, list_favourites, comment_detail
-from .views import update_user, update_user_password, current_user, user_travel_preferences, suggestions
+from .views import update_user, update_user_password, current_user, user_travel_preferences, suggestions, pexels_photos_view
 urlpatterns = [
     path('register/', register_user),
     
@@ -38,9 +38,11 @@ urlpatterns = [
 
     path('update_user_password/', update_user_password, name='update_user_password'),
     
-    # User travel preferences endpoints
     path('travel_preferences/', user_travel_preferences, name='user_travel_preferences'),
+    
     path('suggestions/', suggestions, name='suggestions'),
+    
+    path('photos/', pexels_photos_view, name='pexels_photos'),
     
     path('current_user/', current_user, name='current_user'),
 ]

@@ -3,39 +3,59 @@ import { useSuggestions } from '../../context/SuggestionsContext';
 import axios from 'axios';
 import './TravelSuggestions.css';
 
-// Pexels API key - in a real app, this should be in an environment variable
-const PEXELS_API_KEY = 'HAJLiOgyelZGWk65Qa5gg5owLYMSpyjj3BvjuBrsceMJmLx7STLyzhLX';
+// Using backend proxy for Pexels API instead of direct API key
 
-// Individual suggestion card component with its own photo state
 const SuggestionCard = ({ suggestion, index, onClick }) => {
-  const [photo, setPhoto] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Track both local state and global state
+  const [localPhoto, setLocalPhoto] = useState(suggestion.photoUrl || null);
+  const [isLoading, setIsLoading] = useState(!suggestion.photoUrl && !localPhoto);
+  const { updateSuggestionWithPhoto } = useSuggestions();
 
-  // Fetch photo for this specific card
+
   useEffect(() => {
+    if (suggestion.photoUrl) {
+      setLocalPhoto(suggestion.photoUrl);
+      setIsLoading(false);
+    }
+  }, [suggestion.photoUrl]);
+
+ 
+  useEffect(() => {
+    // If we already have a photo (either local or from context), don't fetch
+    if (localPhoto || suggestion.photoUrl) {
+      return;
+    }
+
     const fetchPhoto = async () => {
       try {
         setIsLoading(true);
-        // Create a completely unique query for each suggestion
-        // Use both suggestion text and a timestamp to ensure uniqueness
-        const timestamp = new Date().getTime();
-        const uniqueQuery = `${suggestion.name} ${suggestion.country} ${index} ${timestamp % 1000}`;
-        const randomOffset = Math.floor(Math.random() * 10); // Random page offset
-        
-        // Make the API call with completely unique parameters
+        // Add a cache buster to avoid browser cache issues
+        const cacheBuster = new Date().getTime();
+        // Get token for authentication with our backend
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+
+        // Use our backend proxy instead of calling Pexels directly
         const response = await axios.get(
-          `https://api.pexels.com/v1/search?query=${encodeURIComponent(`${suggestion.name} ${suggestion.country}`)}`,
+          `http://127.0.0.1:8000/photos/?query=${encodeURIComponent(`${suggestion.name} `)}&per_page=15`,
           {
             headers: {
-              Authorization: PEXELS_API_KEY
+              'Authorization': `Token ${token}`,
+              'Content-Type': 'application/json'
             }
           }
         );
         
         if (response.data.photos && response.data.photos.length > 0) {
-          // Pick a random photo from the results to ensure variety
-          const randomIndex = Math.floor(Math.random() * response.data.photos.length);
-          setPhoto(response.data.photos[randomIndex].src.medium);
+          // Get a consistent photo based on the suggestion properties
+          const photoIndex = Math.abs(suggestion.name.charCodeAt(0) + suggestion.country.charCodeAt(0)) % response.data.photos.length;
+          const photoUrl = response.data.photos[photoIndex].src.medium;
+          
+          // Update both local state and global state
+          setLocalPhoto(photoUrl);
+          updateSuggestionWithPhoto(suggestion.id, photoUrl);
         }
         setIsLoading(false);
       } catch (error) {
@@ -44,11 +64,11 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
       }
     };
 
-    // Add a small random delay before fetching to prevent API rate limiting issues
-    const delay = index * 200 + Math.random() * 300;
+    // Use a consistent delay based on the index
+    const delay = index * 150; 
     const timer = setTimeout(() => fetchPhoto(), delay);
     return () => clearTimeout(timer);
-  }, [suggestion.name, suggestion.country, index]);
+  }, [suggestion.id, suggestion.name, suggestion.country, index, localPhoto]);
 
   return (
     <div 
@@ -59,7 +79,7 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
         <div 
           className="image-container"
           style={{
-            backgroundImage: photo ? `url(${photo})` : 'none',
+            backgroundImage: (localPhoto || suggestion.photoUrl) ? `url(${localPhoto || suggestion.photoUrl})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             height: '180px',
@@ -73,7 +93,7 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
           <div 
             className="image-loading-overlay" 
             style={{ 
-              opacity: photo && !isLoading ? 0 : 1, 
+              opacity: (localPhoto || suggestion.photoUrl) && !isLoading ? 0 : 1, 
               backgroundColor: 'rgba(4, 173, 138, 0.7)' 
             }}
           >
@@ -93,12 +113,7 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
 const TravelSuggestions = ({ onSearch, section }) => {
   const { suggestions, loading, error, fetchSuggestions } = useSuggestions();
 
-  useEffect(() => {
-    // Fetch suggestions if they haven't been fetched yet
-    if (!suggestions.length && !loading && !error) {
-      fetchSuggestions();
-    }
-  }, [suggestions, loading, error, fetchSuggestions]);
+  // Fetch is now managed by SuggestionsContext only, no need for duplicate fetching here
 
   if (loading) {
     return <div className="suggestions-loading">Loading personalized travel suggestions...</div>;
@@ -113,7 +128,6 @@ const TravelSuggestions = ({ onSearch, section }) => {
   }
 
   const handleCardClick = (suggestion) => {
-    // ONLY open Google search in a new tab
     const searchQuery = `${suggestion.name}, ${suggestion.country}`;
     const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
     window.open(googleSearchUrl, '_blank');
@@ -130,6 +144,7 @@ const TravelSuggestions = ({ onSearch, section }) => {
             key={index}
             suggestion={suggestion}
             index={index}
+            section={section}
             onClick={handleCardClick}
           />
         ))}

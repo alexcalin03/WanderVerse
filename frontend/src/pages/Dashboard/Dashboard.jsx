@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import NavBar from '../../components/NavBar/NavBar';
 import FlightForm from '../../components/FlightForm/FlightForm';
 import HotelForm from '../../components/HotelForm/HotelForm';
@@ -21,6 +21,16 @@ const Dashboard = () => {
   const [staysState, setStaysState] = useState(null);
   const [flightsState, setFlightsState] = useState(null);
   const [attractionsState, setAttractionsState] = useState(null);
+
+  // Memoized handler functions to prevent infinite loops
+  const handleStaysSearch = useCallback(() => setStaysSearching(true), []);
+  const handleFlightsSearch = useCallback(() => setFlightsSearching(true), []);
+  const handleAttractionsSearch = useCallback(() => setAttractionsSearching(true), []);
+  
+  // Memoized state change handlers
+  const handleStaysStateChange = useCallback((state) => setStaysState(state), []);
+  const handleFlightsStateChange = useCallback((state) => setFlightsState(state), []);
+  const handleAttractionsStateChange = useCallback((state) => setAttractionsState(state), []);
 
 
   const isSearching = () => {
@@ -86,9 +96,9 @@ const Dashboard = () => {
               <div className="search-section">
                 {!staysSearching && <h2 className="section-title">Search for Accommodations</h2>}
                 <HotelForm 
-                  onSearch={() => setStaysSearching(true)} 
+                  onSearch={handleStaysSearch}
                   initialState={staysState} 
-                  onStateChange={(state) => setStaysState(state)} />
+                  onStateChange={handleStaysStateChange} />
               </div>
             </>
           )}
@@ -111,9 +121,9 @@ const Dashboard = () => {
               <div className="search-section">
                 {!flightsSearching && <h2 className="section-title">Search for Flights</h2>}
                 <FlightForm 
-                  onSearch={() => setFlightsSearching(true)}
+                  onSearch={handleFlightsSearch}
                   initialState={flightsState}
-                  onStateChange={(state) => setFlightsState(state)} />
+                  onStateChange={handleFlightsStateChange} />
               </div>
             </>
           )}
@@ -136,9 +146,9 @@ const Dashboard = () => {
               <div className="search-section">
                 {!attractionsSearching && <h2 className="section-title">Search for Attractions</h2>}
                 <AttractionForm 
-                  onSearch={() => setAttractionsSearching(true)}
+                  onSearch={handleAttractionsSearch}
                   initialState={attractionsState}
-                  onStateChange={(state) => setAttractionsState(state)} />
+                  onStateChange={handleAttractionsStateChange} />
               </div>
             </>
           )}

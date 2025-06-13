@@ -18,6 +18,8 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
     const [adults, setAdults] = useState(initialState?.adults || 1);
     const [results, setResults] = useState(initialState?.results || []);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined" && $ && $.fn.autocomplete) {
@@ -65,32 +67,50 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Call onSearch immediately when form is submitted
-        if(onSearch) onSearch();
-        
         setLoading(true);
+        setError(null); // Clear any previous errors
+        setHasSearched(true); // Mark that a search has been performed
+        onSearch(); // Notify parent component that search is in progress
+
         try {
-            const data = await fetchFlights(origin, destination, departureDate, tripType === 'round-trip' ? returnDate : null, adults);
-            setResults(data);
+            // Call fetchFlights with individual parameters
+            let data;
+            if (tripType === 'round-trip' && returnDate) {
+                data = await fetchFlights(origin, destination, departureDate, returnDate, adults);
+            } else {
+                data = await fetchFlights(origin, destination, departureDate, null, adults);
+            }
             
-            // Save the final state with results
-            if (onStateChange) {
-                onStateChange({
-                    tripType,
-                    origin,
-                    destination,
-                    departureDate,
-                    returnDate,
-                    adults,
-                    results: data
-                });
+            // Check if the response contains an error
+            if (data && data.error) {
+                setError(data.error);
+                setResults([]);
+            } else if (Array.isArray(data) && data.length === 0) {
+                setError('No flights found matching your criteria. Please try different search parameters.');
+                setResults([]);
+            } else {
+                setResults(data);
+                
+                // Save the final state with results
+                if (onStateChange) {
+                    onStateChange({
+                        tripType,
+                        origin,
+                        destination,
+                        departureDate,
+                        returnDate,
+                        adults,
+                        results: data
+                    });
+                }
             }
         } catch (error) {
             console.error('Error fetching flights:', error);
+            setError('An unexpected error occurred.');
+            setResults([]);
         }
         setLoading(false);
-    };
+    }
 
     return (
         <>
@@ -139,13 +159,28 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
     
             {/* Show loading indicator while fetching flights */}
             {loading && <Loading />}
+            
+            {/* Display error message if there's an error */}
+            {!loading && error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                    <p>Please try again with different search parameters.</p>
+                </div>
+            )}
     
             {/* Display search results */}
-            {!loading && results.length > 0 && (
+            {!loading && !error && results.length > 0 && (
                 <div className="flight-results">
                     {results.map((flight, index) => (
                         <FlightCard key={index} flight={flight} />
                     ))}
+                </div>
+            )}
+            
+            {/* No results but no error message - only show after a search */}
+            {!loading && !error && hasSearched && results.length === 0 && (
+                <div className="no-results-message">
+                    <p>No search results found. Please try different search parameters.</p>
                 </div>
             )}
         </>
