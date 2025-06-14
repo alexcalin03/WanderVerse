@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
+
 const SuggestionsContext = createContext(null);
 
 export const SuggestionsProvider = ({ children }) => {
@@ -24,7 +26,7 @@ export const SuggestionsProvider = ({ children }) => {
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.get('http://127.0.0.1:8000/suggestions/', {
+      const response = await axios.get(`${API_BASE}/suggestions/`, {
         headers: {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json'

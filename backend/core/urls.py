@@ -4,7 +4,7 @@ from .views import attractions_search_view, post_blog_view, blog_details_view
 from .views import increment_reads, like_post, post_or_get_comment, list_favourites, comment_detail
 from .views import update_user, update_user_password, current_user, user_travel_preferences, suggestions, pexels_photos_view
 urlpatterns = [
-    path('register/', register_user),
+    path('register/', register_user, name='register_user'),
     
     path('logout/', logout_user),
 
