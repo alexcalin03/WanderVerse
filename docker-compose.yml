@@ -24,6 +24,7 @@ services:
       - ./backend:/app
     ports:
       - "8000:8000"
+      - "8089:8089"
     environment:
       - DEBUG=1
       - SECRET_KEY=django-insecure-ybx1l3xp77eam9paz+uapto7hug7gqj4foo#c_!$w

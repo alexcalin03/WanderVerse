@@ -55,14 +55,12 @@ def update_user_password(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Verify that the current password is correct
     if not user.check_password(current_password):
         return Response(
             {'error': 'Current password is incorrect'}, 
             status=status.HTTP_401_UNAUTHORIZED
         )
     
-    # Set the new password
     user.set_password(new_password)
     user.save()
     
@@ -73,15 +71,13 @@ def update_user_password(request):
 @permission_classes([IsAuthenticated])
 def current_user(request):
     user = request.user
-    # Create a redacted password hash for display purposes only
-    # This isn't the actual hash but provides visual feedback that a hash exists
     password_hash = '********'
     
     return Response({
         'id': user.id,
         'username': user.username,
         'email': user.email,
-        'password_hash': password_hash  # Safe representation for UI
+        'password_hash': password_hash
     }, status=status.HTTP_200_OK)
 
 
@@ -90,12 +86,11 @@ def flight_search_view(request):
     origin = request.GET.get('origin', 'MAD')
     destination = request.GET.get('destination', 'ATH')
     departure_date = request.GET.get('departureDate', '2025-03-03')
-    return_date = request.GET.get('returnDate', None)  # Can be None if one-way
+    return_date = request.GET.get('returnDate', None)
     adults = request.GET.get('adults', 1)
 
     flight_data = search_flights(origin, destination, departure_date, return_date, adults)
 
-    # Check if the response contains an error
     if isinstance(flight_data, dict) and 'error' in flight_data:
         return JsonResponse({
             "error": "Invalid travel data. Please try again with different search parameters.",
@@ -126,7 +121,6 @@ def hotel_search_view(request):
 
     hotel_data = search_hotels(city_code, check_in, check_out, adults)
 
-    # Check if the response contains an error
     if isinstance(hotel_data, dict) and 'error' in hotel_data:
         return JsonResponse({
             "error": "Invalid hotel search data. Please try again with different search parameters.",
@@ -153,7 +147,6 @@ def attractions_search_view(request):
     
     attractions_data = search_attractions(latitude, longitude)
 
-    # Check if the response contains an error
     if isinstance(attractions_data, dict) and 'error' in attractions_data:
         return JsonResponse({
             "error": "Invalid attractions search data. Please try again with different coordinates.",
@@ -351,12 +344,10 @@ def like_post(request, blog_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_blogs(request):
-    # Get query parameters
     page = request.query_params.get('page', 1)
     per_page = request.query_params.get('per_page', 15)
     username = request.query_params.get('username', None)
     
-    # Get blogs with optional username filtering
     data = get_blogs(page=page, per_page=per_page, username=username)
     if data is None:
         return Response(
@@ -391,13 +382,11 @@ def list_favourites(request):
 @permission_classes([IsAuthenticated])
 def comment_detail(request, blog_id, comment_id):
     try:
-        # Check if blog exists
         blog = BlogPost.objects.get(id=blog_id)
     except BlogPost.DoesNotExist:
         return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
         
     try:
-        # Check if comment exists and belongs to the specified blog
         comment = Comment.objects.get(id=comment_id, blog_post=blog)
     except Comment.DoesNotExist:
         return Response({"error": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -407,7 +396,6 @@ def comment_detail(request, blog_id, comment_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     elif request.method == 'DELETE':
-        # Check if the authenticated user is the author of the comment
         if comment.user != request.user:
             return Response(
                 {"error": "You don't have permission to delete this comment."},
@@ -421,7 +409,6 @@ def comment_detail(request, blog_id, comment_id):
 @permission_classes([IsAuthenticated])
 def user_travel_preferences(request):
     try:
-        # Get preferences or create if they don't exist
         preferences, created = UserTravelPreferences.objects.get_or_create(user=request.user)
         
         if request.method == 'GET':
@@ -429,7 +416,6 @@ def user_travel_preferences(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         elif request.method in ['PUT', 'PATCH']:
-            # For PATCH, partial=True allows partial updates
             partial = request.method == 'PATCH'
             serializer = UserTravelPreferencesSerializer(preferences, data=request.data, partial=partial)
             
@@ -446,14 +432,9 @@ def user_travel_preferences(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def suggestions(request):
-    """
-    Get personalized travel destination suggestions based on user preferences using OpenAI.
-    """
     try:
-        # Get the user's preferences
         preferences, created = UserTravelPreferences.objects.get_or_create(user=request.user)
         
-        # Use the OpenAI service to generate travel suggestions
         suggestions_data = generate_travel_suggestions(preferences)
         
         return Response(suggestions_data, status=status.HTTP_200_OK)
@@ -465,7 +446,6 @@ def suggestions(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def pexels_photos_view(request):
-    """Proxy endpoint for Pexels API to avoid CORS issues"""
     query = request.GET.get('query')
     per_page = request.GET.get('per_page', 15)
     
