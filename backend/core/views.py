@@ -526,7 +526,6 @@ def suggestions(request):
 Get photo URLs for each suggestion name
 """
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def pexels_photos_view(request):
     query = request.GET.get('query')
     per_page = request.GET.get('per_page', 15)

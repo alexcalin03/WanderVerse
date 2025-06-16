@@ -8,8 +8,11 @@ const SuggestionsContext = createContext(null);
 export const SuggestionsProvider = ({ children }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [photosLoading, setPhotosLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastFetched, setLastFetched] = useState(null);
+  const [photosToLoad, setPhotosToLoad] = useState(0);
+  const [photosLoaded, setPhotosLoaded] = useState(0);
 
   const fetchSuggestions = async (forceRefresh = false) => {
     if (suggestions.length > 0 && !forceRefresh && lastFetched) {
@@ -65,6 +68,22 @@ export const SuggestionsProvider = ({ children }) => {
           : suggestion
       )
     );
+    
+    // Track photo loading progress
+    setPhotosLoaded(prevCount => {
+      const newCount = prevCount + 1;
+      if (newCount >= photosToLoad && photosToLoad > 0) {
+        setPhotosLoading(false);
+      }
+      return newCount;
+    });
+  };
+
+  // Reset photo loading tracking when starting new photo fetch
+  const resetPhotoLoading = (count) => {
+    setPhotosToLoad(count);
+    setPhotosLoaded(0);
+    setPhotosLoading(true);
   };
   
 
@@ -76,7 +95,11 @@ export const SuggestionsProvider = ({ children }) => {
         loading,
         error,
         fetchSuggestions,
-        updateSuggestionWithPhoto
+        updateSuggestionWithPhoto,
+        photosLoading,
+        resetPhotoLoading,
+        photosToLoad,
+        photosLoaded
       }}
     >
       {children}

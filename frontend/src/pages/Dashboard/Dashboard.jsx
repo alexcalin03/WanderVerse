@@ -67,7 +67,7 @@ const Dashboard = () => {
               )}
               
               <div className="search-section">
-                {!staysSearching && <h2 className="section-title">Search for Accommodations</h2>}
+                {!staysSearching}
                 <HotelForm 
                   onSearch={handleStaysSearch}
                   initialState={staysState} 
@@ -92,7 +92,7 @@ const Dashboard = () => {
               )}
               
               <div className="search-section">
-                {!flightsSearching && <h2 className="section-title">Search for Flights</h2>}
+                {!flightsSearching}
                 <FlightForm 
                   onSearch={handleFlightsSearch}
                   initialState={flightsState}
@@ -117,7 +117,7 @@ const Dashboard = () => {
               )}
               
               <div className="search-section">
-                {!attractionsSearching && <h2 className="section-title">Search for Attractions</h2>}
+                {!attractionsSearching}
                 <AttractionForm 
                   onSearch={handleAttractionsSearch}
                   initialState={attractionsState}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSuggestions } from '../../context/SuggestionsContext';
 import axios from 'axios';
 import './TravelSuggestions.css';
+import Loading from '../Loading/Loading';
 
 
 
@@ -9,45 +10,39 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
   // Track both local state and global state
   const [localPhoto, setLocalPhoto] = useState(suggestion.photoUrl || null);
   const [isLoading, setIsLoading] = useState(!suggestion.photoUrl && !localPhoto);
+  const [photoRequested, setPhotoRequested] = useState(false);
   const { updateSuggestionWithPhoto } = useSuggestions();
 
 
   useEffect(() => {
+    // If we already have a photo URL in the suggestion, use it
     if (suggestion.photoUrl) {
       setLocalPhoto(suggestion.photoUrl);
       setIsLoading(false);
+      console.log(`Using existing photo for ${suggestion.name}:`, suggestion.photoUrl);
     }
   }, [suggestion.photoUrl]);
 
  
   useEffect(() => {
-
-    if (localPhoto || suggestion.photoUrl) {
+    // Skip if already have a photo, or if a request was already made
+    if (localPhoto || suggestion.photoUrl || photoRequested) {
       return;
     }
-
+    
+    // Mark this suggestion as having a photo request in progress
+    setPhotoRequested(true);
+    
     const fetchPhoto = async () => {
       try {
         setIsLoading(true);
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
-
+        
         const response = await axios.get(
-          `http://127.0.0.1:8000/photos/?query=${encodeURIComponent(`${suggestion.name} `)}&per_page=15`,
-          {
-            headers: {
-              'Authorization': `Token ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+          `${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}/photos/?query=${encodeURIComponent(`${suggestion.name} `)}&per_page=1`,
         );
         
         if (response.data.photos && response.data.photos.length > 0) {
-          const photoIndex = Math.abs(suggestion.name.charCodeAt(0) + suggestion.country.charCodeAt(0)) % response.data.photos.length;
-          const photoUrl = response.data.photos[photoIndex].src.medium;
-          
+          const photoUrl = response.data.photos[0].src.medium;
           setLocalPhoto(photoUrl);
           updateSuggestionWithPhoto(suggestion.id, photoUrl);
         }
@@ -55,13 +50,14 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
       } catch (error) {
         console.error(`Error fetching photo for ${suggestion.name}:`, error);
         setIsLoading(false);
+        // In case of error, allow retrying later
+        setPhotoRequested(false);
       }
     };
 
-    const delay = index * 150; 
-    const timer = setTimeout(() => fetchPhoto(), delay);
-    return () => clearTimeout(timer);
-  }, [suggestion.id, suggestion.name, suggestion.country, index, localPhoto]);
+    // Execute without delay to speed up loading
+    fetchPhoto();
+  }, [suggestion.id, suggestion.name, suggestion.country, localPhoto, photoRequested, updateSuggestionWithPhoto]);
 
   return (
     <div 
@@ -105,16 +101,29 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
 
 const TravelSuggestions = ({ onSearch, section }) => {
   const { suggestions, loading, error, fetchSuggestions } = useSuggestions();
+  const [hasAllPhotos, setHasAllPhotos] = useState(false);
+  
+  // Check if all suggestions have photos
+  useEffect(() => {
+    if (!loading && suggestions && suggestions.length > 0) {
+      // If all suggestions have photos, we can show the content
+      const allHavePhotos = suggestions.every(s => s.photoUrl);
+      setHasAllPhotos(allHavePhotos);
+    }
+  }, [loading, suggestions]);
+  
+  // Show loading until we have suggestions AND all photos are loaded
+  const isLoading = loading ;
 
-  if (loading) {
-    return <div className="suggestions-loading">Loading personalized travel suggestions...</div>;
+  if (isLoading) {
+    return <Loading />;
   }
 
   if (error) {
     return <div className="suggestions-error">{error}</div>;
   }
 
-  if (!suggestions.length) {
+  if (!suggestions || !suggestions.length) {
     return <div className="suggestions-empty">No travel suggestions available</div>;
   }
 
@@ -132,7 +141,7 @@ const TravelSuggestions = ({ onSearch, section }) => {
       <div className="suggestions-grid">
         {suggestions.map((suggestion, index) => (
           <SuggestionCard
-            key={index}
+            key={suggestion.id}
             suggestion={suggestion}
             index={index}
             section={section}
