@@ -14,7 +14,6 @@
   padding-bottom: 8px;
 }
 
-/* Country search */
 .country-search {
   position: relative;
   margin-bottom: 15px;
@@ -57,7 +56,7 @@
   text-align: center;
 }
 
-/* Selected countries */
+
 .selected-countries {
   display: flex;
   flex-wrap: wrap;
@@ -95,7 +94,6 @@
   padding: 10px 0;
 }
 
-/* Activities grid */
 .activities-grid {
   display: flex;
   flex-wrap: wrap;
@@ -115,7 +113,6 @@
   color: white;
 }
 
-/* Dropdowns */
 select {
   width: 100%;
   padding: 10px;
@@ -124,7 +121,6 @@ select {
   font-size: 14px;
 }
 
-/* Error message */
 .error-message {
   background-color: #fff2f2;
   color: #d32f2f;
@@ -133,14 +129,12 @@ select {
   margin-bottom: 15px;
 }
 
-/* Loading */
 .loading {
   padding: 20px;
   text-align: center;
   color: #666;
 }
 
-/* Modal actions */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -166,7 +160,6 @@ select {
   color: #333;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .preferences-modal {
     width: 90%;

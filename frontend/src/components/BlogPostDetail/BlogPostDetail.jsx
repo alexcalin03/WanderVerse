@@ -43,12 +43,10 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
           setIsFavorited(data.is_liked);
           setLikesCount(data.likes_count);
           
-          // Check if current user is the author
           const currentUsername = localStorage.getItem('username');
           const isPostAuthor = currentUsername && data.blog.user === currentUsername;
           setIsAuthor(isPostAuthor);
           
-          // Initialize edit form data
           setEditFormData({
             title: data.blog.title,
             content: data.blog.content,
@@ -68,10 +66,8 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
     loadDetail();
   }, [blogId]);
 
-  // Handle the edit form submission
   const handleEditSubmit = async (postData) => {
     try {
-      // Call API to update the post
       const response = await fetch(`http://127.0.0.1:8000/blog/${blogId}/`, {
         method: 'PATCH',
         headers: {
@@ -87,7 +83,6 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
         setPost(updatedData.blog);
         setEditMode(false);
         
-        // Notify parent component that post was updated
         if (onPostUpdate) {
           onPostUpdate(updatedData.blog);
         }
@@ -104,7 +99,6 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
     }
   };
   
-  // Handle post deletion
   const handleDeletePost = async () => {
     if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
       try {
@@ -116,12 +110,10 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
         });
         
         if (response.ok) {
-          // Notify parent component that post was deleted
           if (onPostDelete) {
             onPostDelete(blogId);
           }
           
-          // Go back to the feed after successful deletion
           alert('Post deleted successfully.');
           onBack();
         } else {
@@ -170,7 +162,6 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
   };
   
   const handleCommentDeleted = (deletedCommentId) => {
-    // Filter out the deleted comment
     setComments(comments.filter(comment => comment.id !== deletedCommentId));
   };
   
@@ -217,9 +208,7 @@ const BlogPostDetail = ({ blogId, onBack, onPostUpdate = null, onPostDelete = nu
 
       <div className="detail-header">
         <div className="author-location">
-          {/* Username on the top-left */}
           <span className="author">{post.user}</span>
-          {/* Location immediately after username */}
           <span className="location">— {post.location}</span>
         </div>
 

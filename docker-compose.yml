@@ -33,9 +33,6 @@ services:
       - POSTGRES_PASSWORD=458700
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
-      # Add your Amadeus API keys here
-      - AMADEUS_API_KEY=XdTlHLTpOREAH5ApQCLBoa0884YDwmQw
-      - AMADEUS_API_SECRET=b6HdpBDHDGFwJfOP
     depends_on:
       db:
         condition: service_healthy

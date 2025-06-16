@@ -14,6 +14,10 @@ from .services.self_services import get_blogs, get_comments_helper
 from .services.openai_services import generate_travel_suggestions
 from .services.pexels_services import search_photos
 
+"""
+Register a new user
+POST /register/
+"""
 @api_view(['POST'])
 def register_user(request):
     data = request.data
@@ -25,14 +29,20 @@ def register_user(request):
     user = User.objects.create_user(username=username, password=password, email=email)
     return Response({'message':'User created'}, status=status.HTTP_201_CREATED)
 
-
+"""
+Logout the current user
+POST /logout/
+"""
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_user(request):
     request.user.auth_token.delete()
     return Response({'message':'User logged out'}, status=status.HTTP_200_OK)
 
-
+"""
+Update the current user's username and email
+PATCH /update_user/
+"""
 @api_view(['PATCH'])
 def update_user(request):
     user = request.user
@@ -42,6 +52,10 @@ def update_user(request):
     user.save()
     return Response({'message':'User updated'}, status=status.HTTP_200_OK)
 
+"""
+Update the current user's password
+PUT /update_user_password/
+"""
 @api_view(['PUT'])
 def update_user_password(request):
     user = request.user
@@ -66,7 +80,10 @@ def update_user_password(request):
     
     return Response({'message':'User password updated successfully'}, status=status.HTTP_200_OK)
 
-
+"""
+Get the current user's information
+GET /current_user/
+"""
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -81,7 +98,10 @@ def current_user(request):
     }, status=status.HTTP_200_OK)
 
 
-
+"""
+Search for flights
+GET /flights/
+"""
 def flight_search_view(request):
     origin = request.GET.get('origin', 'MAD')
     destination = request.GET.get('destination', 'ATH')
@@ -100,6 +120,10 @@ def flight_search_view(request):
     return JsonResponse(flight_data, safe=False)
 
 
+"""
+Search for airports
+GET /airports/
+"""
 def airport_autocomplete_view(request):
     query = request.GET.get("query", "")
     if not query:
@@ -109,6 +133,10 @@ def airport_autocomplete_view(request):
     return JsonResponse(results, safe=False)
 
 
+"""
+Search for hotels
+GET /hotels/
+"""
 def hotel_search_view(request):
     city_code = request.GET.get('cityCode')
 
@@ -129,7 +157,10 @@ def hotel_search_view(request):
 
     return JsonResponse(hotel_data, safe=False)
 
-
+"""
+Search for cities
+GET /cities/
+"""
 def city_autocomplete_view(request):
     query = request.GET.get('query')
     if not query:
@@ -138,6 +169,10 @@ def city_autocomplete_view(request):
     results = search_cities(query)
     return JsonResponse(results, safe=False)
 
+"""
+Search for attractions
+GET /attractions/
+"""
 def attractions_search_view(request):
     latitude = request.GET.get('latitude')
     longitude = request.GET.get('longitude')
@@ -155,6 +190,10 @@ def attractions_search_view(request):
 
     return JsonResponse(attractions_data, safe=False)
 
+"""
+Post a new blog post
+POST /blog/
+"""
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def post_blog_view(request):
@@ -188,6 +227,10 @@ def post_blog_view(request):
     return Response(response_data, status=status.HTTP_201_CREATED)
 
 
+"""
+Get blog details
+GET /blog/<blog_id>/
+"""
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def blog_details_view(request, blog_id):
@@ -242,6 +285,11 @@ def blog_details_view(request, blog_id):
         return Response({"message": "Blog post deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 
+"""
+Post or get comments for a blog post
+POST /blog/<blog_id>/comments/
+GET /blog/<blog_id>/comments/
+"""
 @api_view(['POST', 'GET'])
 @permission_classes([IsAuthenticated])
 def post_or_get_comment(request, blog_id):
@@ -285,6 +333,10 @@ def post_or_get_comment(request, blog_id):
     else:
         return Response({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+"""
+Increment the reads count for a blog post
+POST /blog/<blog_id>/reads/
+"""
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def increment_reads(request, blog_id):
@@ -296,6 +348,11 @@ def increment_reads(request, blog_id):
     except BlogPost.DoesNotExist:
         return Response({"error": "Blog post not found."}, status=status.HTTP_404_NOT_FOUND)
 
+"""
+Like or unlike a blog post
+POST /blog/<blog_id>/likes/
+DELETE /blog/<blog_id>/likes/
+"""
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def like_post(request, blog_id):
@@ -341,6 +398,10 @@ def like_post(request, blog_id):
         status=status.HTTP_200_OK
     )
 
+"""
+Get a list of blogs
+GET /blogs/
+"""
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_blogs(request):
@@ -369,6 +430,10 @@ def list_blogs(request):
     return Response(response_payload, status=status.HTTP_200_OK)
 
 
+"""
+Get a list of favourite blogs
+GET /favourites/
+"""
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_favourites(request):
@@ -378,6 +443,10 @@ def list_favourites(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+"""
+Get a specific comment
+GET /blog/<blog_id>/comments/<comment_id>/
+"""
 @api_view(['GET', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def comment_detail(request, blog_id, comment_id):
@@ -405,6 +474,12 @@ def comment_detail(request, blog_id, comment_id):
         return Response({"message": "Comment deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
+"""
+Get or update user travel preferences
+GET /travel_preferences/
+PUT /travel_preferences/
+PATCH /travel_preferences/
+"""
 @api_view(['GET', 'PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def user_travel_preferences(request):
@@ -429,6 +504,10 @@ def user_travel_preferences(request):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+"""
+Get travel suggestions based on user preferences
+GET /suggestions/
+"""
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def suggestions(request):
@@ -443,6 +522,9 @@ def suggestions(request):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+"""
+Get photo URLs for each suggestion name
+"""
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def pexels_photos_view(request):

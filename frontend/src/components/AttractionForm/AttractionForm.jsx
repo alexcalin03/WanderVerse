@@ -8,7 +8,6 @@ import Loading from '../Loading/Loading';
 import './AttractionForm.css';
 
 const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
-    // Initialize state from initialState if provided, otherwise use defaults
     const [cityCode, setCityCode] = useState(initialState?.cityCode || '');
     const [displayValue, setDisplayValue] = useState(initialState?.displayValue || '');
     const [latitude, setLatitude] = useState(initialState?.latitude || null);
@@ -50,7 +49,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
         }
     }, []);
 
-    // Save current form state whenever any input changes
     useEffect(() => {
         if (onStateChange) {
             const currentState = {
@@ -67,13 +65,12 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        // Call onSearch immediately when form is submitted
         if(onSearch) onSearch();
         
         setLoading(true);
         setResults([]);
-        setError(null); // Clear any previous errors
-        setHasSearched(true); // Mark that a search has been performed
+        setError(null); 
+        setHasSearched(true); 
 
         if (!latitude || !longitude) {
             setError("Please select a city from the suggestions.");
@@ -85,7 +82,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
             console.log("Fetching attractions for:", { latitude, longitude });
             const data = await fetchAttractions(latitude, longitude);
             
-            // Check if the response contains an error
             if (data && data.error) {
                 setError(data.error);
                 setResults([]);
@@ -95,7 +91,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
             } else {
                 setResults(data);
                 
-                // Save the final state with results
                 if (onStateChange) {
                     onStateChange({
                         cityCode,
@@ -133,7 +128,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
 
             {loading && <Loading />}
 
-            {/* Display error message if there's an error */}
             {!loading && error && (
                 <div className="error-message">
                     <p>{error}</p>
@@ -141,7 +135,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
                 </div>
             )}
             
-            {/* Display search results */}
             {!loading && !error && results.length > 0 && (
                 <div className="attraction-results">
                     {results.map((attraction, index) => (
@@ -150,7 +143,6 @@ const AttractionForm = ({ onSearch, initialState, onStateChange }) => {
                 </div>
             )}
             
-            {/* No results but no error message - only show after a search */}
             {!loading && !error && hasSearched && results.length === 0 && (
                 <div className="no-results-message">
                     <p>No search results found. Please try different search parameters.</p>

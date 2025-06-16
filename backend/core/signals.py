@@ -16,7 +16,6 @@ def save_user_travel_preferences(sender, instance, **kwargs):
     """
     Signal to save UserTravelPreferences when User is updated
     """
-    # Create travel preferences if they don't exist
     if not hasattr(instance, 'travel_preferences'):
         UserTravelPreferences.objects.create(user=instance)
     else:

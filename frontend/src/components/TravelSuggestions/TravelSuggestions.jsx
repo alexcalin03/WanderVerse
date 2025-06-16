@@ -3,7 +3,7 @@ import { useSuggestions } from '../../context/SuggestionsContext';
 import axios from 'axios';
 import './TravelSuggestions.css';
 
-// Using backend proxy for Pexels API instead of direct API key
+
 
 const SuggestionCard = ({ suggestion, index, onClick }) => {
   // Track both local state and global state
@@ -21,7 +21,7 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
 
  
   useEffect(() => {
-    // If we already have a photo (either local or from context), don't fetch
+
     if (localPhoto || suggestion.photoUrl) {
       return;
     }
@@ -29,15 +29,11 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
     const fetchPhoto = async () => {
       try {
         setIsLoading(true);
-        // Add a cache buster to avoid browser cache issues
-        const cacheBuster = new Date().getTime();
-        // Get token for authentication with our backend
         const token = localStorage.getItem('authToken');
         if (!token) {
           throw new Error('No authentication token found');
         }
 
-        // Use our backend proxy instead of calling Pexels directly
         const response = await axios.get(
           `http://127.0.0.1:8000/photos/?query=${encodeURIComponent(`${suggestion.name} `)}&per_page=15`,
           {
@@ -49,11 +45,9 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
         );
         
         if (response.data.photos && response.data.photos.length > 0) {
-          // Get a consistent photo based on the suggestion properties
           const photoIndex = Math.abs(suggestion.name.charCodeAt(0) + suggestion.country.charCodeAt(0)) % response.data.photos.length;
           const photoUrl = response.data.photos[photoIndex].src.medium;
           
-          // Update both local state and global state
           setLocalPhoto(photoUrl);
           updateSuggestionWithPhoto(suggestion.id, photoUrl);
         }
@@ -64,7 +58,6 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
       }
     };
 
-    // Use a consistent delay based on the index
     const delay = index * 150; 
     const timer = setTimeout(() => fetchPhoto(), delay);
     return () => clearTimeout(timer);
@@ -112,8 +105,6 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
 
 const TravelSuggestions = ({ onSearch, section }) => {
   const { suggestions, loading, error, fetchSuggestions } = useSuggestions();
-
-  // Fetch is now managed by SuggestionsContext only, no need for duplicate fetching here
 
   if (loading) {
     return <div className="suggestions-loading">Loading personalized travel suggestions...</div>;

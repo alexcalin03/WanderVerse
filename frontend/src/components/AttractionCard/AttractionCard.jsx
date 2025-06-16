@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './AttractionCard.css';
 
 const AttractionCard = ({ attraction }) => {
@@ -37,13 +36,6 @@ const AttractionCard = ({ attraction }) => {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="see-details-btn"
-                    onClick={() => {
-                        console.log('Booking link clicked:', attraction.bookingLink);
-                        // If the link is N/A or empty, use the fallback
-                        if (!attraction.bookingLink || attraction.bookingLink === 'N/A') {
-                            console.log('Using fallback link instead');
-                        }
-                    }}
                 >
                     Find Tickets
                 </a>

@@ -150,7 +150,6 @@ const Account = () => {
         </button>
       </div>
       
-      {/* Update User Modal */}
       {showUpdateUserModal && (
         <div className="modal-backdrop">
           <div className="modal">
@@ -197,13 +196,11 @@ const Account = () => {
         </div>
       )}
       
-      {/* Travel Preferences Modal */}
       <UserPreferencesModal
         show={showPreferencesModal}
         onClose={() => setShowPreferencesModal(false)}
       />
       
-      {/* Update Password Modal */}
       {showUpdatePasswordModal && (
         <div className="modal-backdrop">
           <div className="modal">

@@ -79,13 +79,10 @@ const BlogFeed = ({ onSearch }) => {
     try {
       const response = await postBlog(formData);
       console.log('Blog posted successfully:', response);
-      
-      // Refresh the posts from the API with skipCache=true to ensure we get fresh data
-      // This ensures we get the newly posted blog and all proper fields including excerpt
       const username = filteringByUser ? currentUsername : null;
       const data = await fetchBlogsPage(1, perPage, username, true);
       setPosts(data.results);
-      setPage(1); // Reset to first page since we have fresh data
+      setPage(1); 
       setShowShareForm(false);
     } catch (error) {
       console.error('Error posting blog:', error);

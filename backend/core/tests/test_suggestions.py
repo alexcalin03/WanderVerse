@@ -87,9 +87,6 @@ class TestSuggestionsIntegration:
 
     def test_create_preferences_for_new_user(self, authenticated_client, create_travel_preferences):
         """Test creating preferences for a user who doesn't have any yet"""
-        # First, make sure user has no preferences (this should be the case for a new user)
-        
-        # Create new preferences
         preference_data = {
             "preferred_countries": ["CA", "NO", "IS"],
             "preferred_activities": ["hiking", "nature", "northern lights"],
@@ -97,13 +94,10 @@ class TestSuggestionsIntegration:
             "preferred_budget_range": "mid-range"
         }
         
-        # Create preferences
         pref_response = authenticated_client.put('/travel_preferences/', preference_data, format='json')
         assert pref_response.status_code == status.HTTP_200_OK
         
-        # Mock the suggestions service
         with patch('core.views.generate_travel_suggestions') as mock_generate:
-            # Setup mock response based on the new preferences
             mock_suggestions = {
                 "suggestions": [
                     {
@@ -117,14 +111,11 @@ class TestSuggestionsIntegration:
             }
             mock_generate.return_value = mock_suggestions
             
-            # Get suggestions
             response = authenticated_client.get('/suggestions/')
             
-            # Verify response
             assert response.status_code == status.HTTP_200_OK
             assert "suggestions" in response.json()
             
-            # Verify the mock was called with new preferences
             mock_generate.assert_called_once()
             preferences_arg = mock_generate.call_args[0][0]
             assert preferences_arg.user.username == 'testuser'
@@ -143,13 +134,10 @@ class TestSuggestionsIntegration:
         )
         """Test error handling in the suggestions endpoint"""
         with patch('core.views.generate_travel_suggestions') as mock_generate:
-            # Simulate an error in the suggestions service
             mock_generate.side_effect = Exception("API service unavailable")
             
-            # Get suggestions
             response = authenticated_client.get('/suggestions/')
             
-            # Verify error response
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
             assert "error" in response.json()
             assert "API service unavailable" in response.json()["error"]

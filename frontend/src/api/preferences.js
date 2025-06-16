@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:8000';
 
-// Get user travel preferences
 export const getUserPreferences = async () => {
   try {
     const token = localStorage.getItem('authToken');
@@ -21,7 +20,6 @@ export const getUserPreferences = async () => {
   }
 };
 
-// Update user travel preferences
 export const updateUserPreferences = async (preferences) => {
   try {
     const token = localStorage.getItem('authToken');
@@ -40,7 +38,6 @@ export const updateUserPreferences = async (preferences) => {
   }
 };
 
-// Get country suggestions based on user preferences
 export const getCountrySuggestions = async () => {
   try {
     const token = localStorage.getItem('authToken');

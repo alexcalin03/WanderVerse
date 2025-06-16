@@ -6,21 +6,21 @@
 
 .share-experience-button {
   position: fixed;
-  top: 80px; /* Increased from 20px to 80px to move it down below the navbar */
+  top: 80px;
   left: 20px;
   z-index: 100;
 }
 
 .my-posts {
   position: fixed;
-  top: 80px; /* Same height as share experience button */
+  top: 80px;
   right: 20px;
   z-index: 100;
 }
 
 .favourites-button {
   position: fixed;
-  top: 140px; /* Position below the My Posts button */
+  top: 140px;
   right: 20px;
   z-index: 100;
 }

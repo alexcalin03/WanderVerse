@@ -25,7 +25,6 @@
     margin-bottom: 16px;
   }
 
-  /* Author actions (edit and delete buttons) */
   .author-actions {
     display: flex;
     justify-content: flex-end;
@@ -64,8 +63,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
   
-  /* Edit form styles */
-  /* Ensure edit mode matches regular content width */
   .edit-mode-content {
     width: 100%;
     background-color: #f9f9f9;
@@ -204,7 +201,6 @@
     color: #000;
   }
   
-  /* Comment form styles */
   .comment-form {
     margin-top: 16px;
     padding: 12px;

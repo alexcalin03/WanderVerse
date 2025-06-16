@@ -4,6 +4,19 @@ from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 
 class BlogPost(models.Model):
+    """
+    BlogPost model
+    Fields:
+    - user: Foreign key to User model (cascade delete)
+    - title: String field (max 200 chars)
+    - slug: URL-friendly identifier (unique, auto-generated)
+    - content: Text field for blog content
+    - location: String field for travel location
+    - reads: Integer counter for number of views
+    - liked_by: Many-to-many relation to User model
+    - created_at: Timestamp of creation (auto)
+    - updated_at: Timestamp of last update (auto)
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True, help_text="URL-friendly identifier")
@@ -36,6 +49,15 @@ class BlogPost(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Comment model
+    Fields:
+    - user: Foreign key to User model (cascade delete)
+    - blog_post: Foreign key to BlogPost model (cascade delete)
+    - content: Text field for comment content
+    - created_at: Timestamp of creation (auto)
+    - updated_at: Timestamp of last update (auto)
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
@@ -52,18 +74,24 @@ class Comment(models.Model):
 
 class UserTravelPreferences(models.Model):
     """
-    Stores user travel preferences including preferred countries to visit
-    and other travel-related settings
+    UserTravelPreferences model
+    Fields:
+    - user: One-to-one relation with User model
+    - preferred_countries: JSON field for country codes
+    - preferred_activities: JSON field for activity types
+    - preferred_climate: String field for climate preference
+    - preferred_budget_range: String field for budget preference
+    - travel_style: JSON field for accommodation/duration preferences
+    - created_at: Timestamp of creation (auto)
+    - updated_at: Timestamp of last update (auto)
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='travel_preferences')
     
-    # Country preferences
     preferred_countries = models.JSONField(
         default=list,
         help_text="List of country codes the user prefers to visit"
     )
     
-    # Travel preferences
     preferred_activities = models.JSONField(
         default=list, 
         blank=True,
@@ -80,7 +108,6 @@ class UserTravelPreferences(models.Model):
         help_text="User's typical travel budget range (e.g., 'budget', 'mid-range', 'luxury')"
     )
     
-    # Travel style
     travel_style = models.JSONField(
         default=dict,
         blank=True,

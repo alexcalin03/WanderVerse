@@ -10,7 +10,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f3f4f6; /* Light gray background */
+  background-color: #f3f4f6; 
     flex-direction: column;
     background-image: url('/public/resources/dolomites.jpg');
     background-size: cover;
@@ -48,7 +48,7 @@
 
 .signup-form input:focus {
   outline: none;
-  border-color: rgb(4, 193, 158); /* Blue border on focus */
+  border-color: rgb(4, 193, 158); 
   box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
 }
 

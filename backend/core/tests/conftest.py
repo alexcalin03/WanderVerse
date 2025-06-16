@@ -109,7 +109,6 @@ def liked_blog(test_blog, test_user, second_test_user):
 
 @pytest.fixture
 def user_travel_preferences(test_user):
-    """Create basic travel preferences for a test user"""
     preferences, created = UserTravelPreferences.objects.get_or_create(
         user=test_user,
         defaults={
@@ -120,7 +119,6 @@ def user_travel_preferences(test_user):
         }
     )
     
-    # If preferences already existed, update them to ensure consistent test data
     if not created:
         preferences.preferred_countries = ['FR', 'IT', 'ES']
         preferences.preferred_activities = ['beach', 'hiking', 'cultural']
@@ -133,7 +131,6 @@ def user_travel_preferences(test_user):
 
 @pytest.fixture
 def create_travel_preferences():
-    """Factory fixture to create travel preferences with custom parameters"""
     def _create_preferences(user, **kwargs):
         defaults = {
             'preferred_countries': ['US', 'JP', 'AU'],
@@ -156,7 +153,6 @@ def create_travel_preferences():
 
 @pytest.fixture
 def mock_travel_suggestions():
-    """Mock fixture for travel suggestions response"""
     suggestions_data = {
         "suggestions": [
             {

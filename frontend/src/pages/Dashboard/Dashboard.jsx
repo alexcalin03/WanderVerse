@@ -22,34 +22,15 @@ const Dashboard = () => {
   const [flightsState, setFlightsState] = useState(null);
   const [attractionsState, setAttractionsState] = useState(null);
 
-  // Memoized handler functions to prevent infinite loops
+
   const handleStaysSearch = useCallback(() => setStaysSearching(true), []);
   const handleFlightsSearch = useCallback(() => setFlightsSearching(true), []);
   const handleAttractionsSearch = useCallback(() => setAttractionsSearching(true), []);
   
-  // Memoized state change handlers
   const handleStaysStateChange = useCallback((state) => setStaysState(state), []);
   const handleFlightsStateChange = useCallback((state) => setFlightsState(state), []);
   const handleAttractionsStateChange = useCallback((state) => setAttractionsState(state), []);
 
-
-  const isSearching = () => {
-    switch (activeSection) {
-      case 'stays': return staysSearching;
-      case 'flights': return flightsSearching;
-      case 'attractions': return attractionsSearching;
-      default: return false;
-    };
-  };
-
-
-  const setSearching = (value) => {
-    switch (activeSection) {
-      case 'stays': setStaysSearching(value); break;
-      case 'flights': setFlightsSearching(value); break;
-      case 'attractions': setAttractionsSearching(value); break;
-    };
-  };
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -61,16 +42,8 @@ const Dashboard = () => {
     else if (section === 'attractions') setAttractionsSearching(true);
     
     console.log('Suggestion selected:', suggestion);
-    // TODO: pre-fill forms based on suggestion
   };
   
-  const saveFormState = (sectionName, formData) => {
-    switch (sectionName) {
-      case 'stays': setStaysState(formData); break;
-      case 'flights': setFlightsState(formData); break;
-      case 'attractions': setAttractionsState(formData); break;
-    };
-  };
 
   return (
     <div>

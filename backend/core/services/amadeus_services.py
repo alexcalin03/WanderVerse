@@ -8,20 +8,22 @@ load_dotenv()
 API_KEY = os.getenv('AMADEUS_API_KEY')
 API_SECRET = os.getenv('AMADEUS_API_SECRET')
 
-# Initialize the Amadeus Client with your credentials
+
 amadeus = Client(
     client_id=API_KEY,
     client_secret=API_SECRET
 )
 
+"""
+Returns a list of up to 5 airports and cities matching the query string
+"""
 
-# Function to fetch airport suggestions using Amadeus API
 def search_airports(query):
     try:
         response = amadeus.reference_data.locations.get(
             keyword=query,
             subType="AIRPORT,CITY",
-            page={"limit": 5}  # Limit results to 5 suggestions
+            page={"limit": 5}
         )
 
         if response.data:
@@ -39,17 +41,21 @@ def search_airports(query):
     except ResponseError as error:
         return {"error": str(error)}
 
-# Function to fetch airline name based on IATA code
+"""
+Returns the common name of an airline given its IATA code
+"""
 def get_airline_name(iata_code):
     try:
         response = amadeus.reference_data.airlines.get(airlineCodes=iata_code)
         if response.data:
-            return response.data[0].get("commonName", iata_code)  # Return airline name if available
-        return iata_code  # Return IATA code if no name found
+            return response.data[0].get("commonName", iata_code) 
+        return iata_code 
     except ResponseError:
-        return iata_code  # Return IATA code in case of an error
+        return iata_code 
 
-
+"""
+Search for flights between two airports on a specific date
+"""
 def search_flights(origin, destination, departure_date, return_date=None, adults=1):
     try:
         kwargs = {
@@ -57,16 +63,14 @@ def search_flights(origin, destination, departure_date, return_date=None, adults
             "destinationLocationCode": destination,
             "departureDate": departure_date,
             "adults": adults,
-            "max": 10  # Limit to 10 results
+            "max": 10 
         }
 
         if return_date:
-            kwargs["returnDate"] = return_date  # Ensure returnDate is included
+            kwargs["returnDate"] = return_date  
 
-        # Debugging: Print the actual API request being sent
         print(f"Sending request to Amadeus with parameters: {kwargs}")
 
-        # Fetch flights from Amadeus
         response = amadeus.shopping.flight_offers_search.get(**kwargs)
 
         flight_data = []
@@ -75,12 +79,10 @@ def search_flights(origin, destination, departure_date, return_date=None, adults
 
 
 
-            # Extract outbound itinerary (first itinerary)
             outbound_segments = itineraries[0]["segments"] if len(itineraries) > 0 else []
             outbound_first_segment = outbound_segments[0] if outbound_segments else {}
             outbound_last_segment = outbound_segments[-1] if outbound_segments else {}
 
-            # Extract return itinerary (second itinerary, if available)
             return_segments = itineraries[1]["segments"] if len(itineraries) > 1 else []
             return_first_segment = return_segments[0] if return_segments else {}
             return_last_segment = return_segments[-1] if return_segments else {}
@@ -121,7 +123,7 @@ def search_flights(origin, destination, departure_date, return_date=None, adults
                         }
                         for segment in return_segments
                     ]
-                } if return_date else None  # Only include if a return date was requested
+                } if return_date else None 
             })
 
         return flight_data
@@ -129,7 +131,9 @@ def search_flights(origin, destination, departure_date, return_date=None, adults
     except ResponseError as error:
         return {"error": str(error)}
 
-
+"""
+Returns a list of hotel IDs for a specific city code
+"""
 def get_hotel_id(cityCode):
     try:
         response = amadeus.reference_data.locations.hotels.by_city.get(cityCode=cityCode)
@@ -137,7 +141,6 @@ def get_hotel_id(cityCode):
         if not response.data:
             return {"error": "No hotels found for this city."}
 
-        #  Extract all hotel IDs
         hotel_ids = [hotel["hotelId"] for hotel in response.data]
 
 
@@ -147,14 +150,15 @@ def get_hotel_id(cityCode):
         print(f" Amadeus API Error: {error.response.result}")
         return {"error": str(error)}
 
-
+"""
+Search for hotels in a specific city on a specific date range
+"""
 def search_hotels(cityCode, checkInDate, checkOutDate, adults):
     try:
         hotel_ids = get_hotel_id(cityCode)
         if "error" in hotel_ids:
             return hotel_ids
 
-        # Limit to 10 hotels to avoid API errors
         hotel_ids = hotel_ids[:35]
 
         kwargs = {
@@ -183,7 +187,6 @@ def search_hotels(cityCode, checkInDate, checkOutDate, adults):
                 continue
 
             for offer in offers:
-                # Extract room details safely
                 room_info = offer.get("room", {}).get("typeEstimated", {})
                 cancellation_policy = offer.get("policies", {}).get("cancellation", {}).get("description", {}).get("text", "No cancellation policy")
 
@@ -210,14 +213,15 @@ def search_hotels(cityCode, checkInDate, checkOutDate, adults):
     except ResponseError as error:
         return {"error": str(error)}
 
-
-
+"""
+Search for cities based on a query string
+"""
 def search_cities (query):
     try:
         response = amadeus.reference_data.locations.get(
             keyword=query,
             subType="CITY",
-            page={"limit": 5}  # Limit results to 5 suggestions
+            page={"limit": 5}  
         )
 
         if response.data:
@@ -237,8 +241,9 @@ def search_cities (query):
     except ResponseError as error:
         return {"error": str(error)}
 
-
-
+"""
+Search for attractions based on a latitude and longitude
+"""
 def search_attractions(latitude, longitude, radius=20):
     try:
         response = amadeus.shopping.activities.get(
@@ -261,8 +266,8 @@ def search_attractions(latitude, longitude, radius=20):
                     "booking_link": activity.get("bookingLink", "N/A"),
                 }
                 for activity in response.data
-                if activity.get("bookingLink")  # Filter out activities without booking links
-                if activity.get("pictures")  # Filter out activities without pictures
+                if activity.get("bookingLink")  
+                if activity.get("pictures")  
             ]
 
         return {"error": "No activities found"}

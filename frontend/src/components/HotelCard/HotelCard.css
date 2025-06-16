@@ -15,7 +15,6 @@
     transform: scale(1.02);
 }
 
-/* Left - Hotel Image */
 .hotel-image {
     flex: 1;
     max-width: 150px;
@@ -29,7 +28,6 @@
     object-fit: cover;
 }
 
-/* Right - Hotel Information */
 .hotel-info {
     flex: 2;
     padding: 15px;
@@ -58,7 +56,6 @@
     color: black;
 }
 
-/* Book Hotel Button */
 .book-hotel-btn {
     background-color: rgb(4, 173, 138);
     color: white;

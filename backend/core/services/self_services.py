@@ -1,6 +1,8 @@
 from core.models import BlogPost, Comment
 
-
+"""
+Helper function for paginating blogs for the blog listing view
+"""
 def get_blogs(page=1, per_page=5, username=None):
     try:
         page = int(page)
@@ -8,16 +10,13 @@ def get_blogs(page=1, per_page=5, username=None):
         if page < 1:
             page = 1
         
-        # Filter by username if provided
         if username and username.lower() != 'null':
             blogs_query = BlogPost.objects.filter(user__username=username).order_by('-created_at')
         else:
             blogs_query = BlogPost.objects.all().order_by('-created_at')
             
-        # Get total count for pagination
         total_count = blogs_query.count()
         
-        # Apply pagination
         start = (page - 1) * per_page
         end = start + per_page
         blogs = blogs_query[start:end]
@@ -34,6 +33,7 @@ def get_blogs(page=1, per_page=5, username=None):
         print(f"Error getting blogs: {e}")
         return None
 
+
 def increment_reads(blog_id):
     try:
         blog = BlogPost.objects.get(id=blog_id)
@@ -45,20 +45,10 @@ def increment_reads(blog_id):
         return False
 
 
-def increment_likes(blog_id):
-    try:
-        blog = BlogPost.objects.get(id=blog_id)
-        blog.likes += 1
-        blog.save()
-        return True
-    except Exception as e:
-        print(f"Error incrementing likes: {e}")
-        return False
-    
 
-
-
-
+"""
+Helper function for paginating comments for a specific blog post
+"""
 def get_comments_helper(blog_id, page=1, per_page=15):
     try:
         blog = BlogPost.objects.get(id=blog_id)

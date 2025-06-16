@@ -9,9 +9,7 @@ const BlogCard = ({ post, onReadMore }) => {
   const [isLiked, setIsLiked] = useState(post.is_liked);
   const [currentUsername, setCurrentUsername] = useState('');
   
-  // Get current username from JWT token or localStorage
   useEffect(() => {
-    // Try to get the username from localStorage
     const username = localStorage.getItem('username');
     if (username) {
       setCurrentUsername(username);

@@ -8,10 +8,10 @@
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Changed to flex-start for better scrolling behavior */
-    padding: 50px 0; /* Add padding to ensure it's not right at the top of the screen */
-    overflow-y: auto; /* Allow the overlay itself to scroll if needed */
-    z-index: 9999; /* Increased z-index to ensure it's above everything */
+    align-items: flex-start;
+    padding: 50px 0;
+    overflow-y: auto;
+    z-index: 9999;
   }
   
   
@@ -21,31 +21,31 @@
     border-radius: 10px;
     width: 400px;
     max-width: 90%;
-    max-height: 80vh; /* Limit height to 80% of viewport */
+    max-height: 80vh;
     position: relative;
     text-align: center;
-    overflow-y: auto; /* Enable scrolling for content that exceeds max-height */
-    margin: 0 auto; /* Center horizontally */
-    margin-top: 20px; /* Add some top margin */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add shadow for better visibility */
+    overflow-y: auto;
+    margin: 0 auto;
+    margin-top: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
   
 
   .close-btn {
-    position: sticky; /* Changed to sticky to keep it visible while scrolling */
-    float: right; /* Keep it on the right side */
-    top: 0; /* Stick to the top */
-    right: 0; /* Stick to the right */
-    margin-top: -10px; /* Adjust positioning */
-    margin-right: -10px; /* Adjust positioning */
+    position: sticky;
+    float: right;
+    top: 0;
+    right: 0;
+    margin-top: -10px;
+    margin-right: -10px;
     background: red;
     color: white;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    padding: 5px 8px; /* Slightly larger padding for better tapping/clicking */
+    padding: 5px 8px;
     border-radius: 5px;
-    z-index: 1; /* Ensure it's above the modal content */
+    z-index: 1;
   }
   
 

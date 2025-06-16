@@ -2,10 +2,6 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 
 export const loginUser = async (username, password) => {
     try {
-        console.log('Logging in with:', { username, password });
-        // Add debug log to see the API URL being used
-        console.log('Using API URL:', `${API_BASE}/api/token/`);
-        
         const response = await fetch(`${API_BASE}/api/token/`, {
             method: 'POST',
             headers: {
@@ -14,9 +10,6 @@ export const loginUser = async (username, password) => {
             },
             body: JSON.stringify({ username, password }),
         });
-
-        // Log the status and response text for debugging
-        console.log('Status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -35,7 +28,7 @@ export const loginUser = async (username, password) => {
 
         const data = await response.json();
         console.log('Login successful:', data);
-        return data; // Contains the token
+        return data; 
     } catch (error) {
         throw error;
     }

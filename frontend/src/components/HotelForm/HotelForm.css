@@ -30,13 +30,13 @@
     outline: none;
   }
   
-  /* Style focus effect */
+ 
   .hotel-form input:focus {
     border-color: rgb(4, 173, 138);
     box-shadow: 0 0 5px rgba(4, 173, 138, 0.5);
   }
   
-  /* Style the submit button */
+ 
   .hotel-form button {
     background-color: rgb(4, 193, 158);
     color: white;

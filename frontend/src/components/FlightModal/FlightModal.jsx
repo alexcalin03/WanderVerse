@@ -2,29 +2,22 @@ import React from "react";
 import "./FlightModal.css";
 
 const FlightModal = ({ flight, onClose }) => {
-  // Function to generate a flight booking URL based on flight details
   const generateBookingUrl = (flight) => {
-    // Extract flight information
     const outboundSegment = flight.outbound.segments[0];
     const departureDate = new Date(outboundSegment.departureTime).toISOString().split('T')[0];
     const originCode = flight.outbound.from;
     const destinationCode = flight.outbound.to;
     
-    // Check if it's a round trip
     const isRoundTrip = !!flight.return;
     
-    // Get return date if it's a round trip
     const returnDate = isRoundTrip 
       ? new Date(flight.return.segments[0].departureTime).toISOString().split('T')[0]
       : '';
     
-    // Get number of adults (default to 1 if not specified)
     const adults = flight.adults || 1;
     
-    // Check if it's a known airline and generate a direct airline URL if possible
     const airline = outboundSegment.airline?.toLowerCase() || '';
     
-    // Handle specific airlines (add more as needed)
     if (airline.includes('delta')) {
       let url = `https://www.delta.com/flight-search/book-a-flight?cacheKeySuffix=bookAFlight&departure=${originCode}&destination=${destinationCode}&departureDate=${departureDate}&numAdult=${adults}`;
       if (isRoundTrip) {
@@ -63,14 +56,12 @@ const FlightModal = ({ flight, onClose }) => {
       return url;
     }
     
-    // Default to Google Flights as a fallback
     let googleUrl = `https://www.google.com/travel/flights?q=Flights%20from%20${originCode}%20to%20${destinationCode}%20on%20${departureDate}`;
     
     if (isRoundTrip) {
       googleUrl = `https://www.google.com/travel/flights?q=Flights%20from%20${originCode}%20to%20${destinationCode}%20on%20${departureDate}%20return%20${returnDate}`;
     }
     
-    // Add adults if more than 1
     if (adults > 1) {
       googleUrl += `%20${adults}%20adults`;
     }
@@ -83,27 +74,22 @@ const FlightModal = ({ flight, onClose }) => {
     console.log('Opening booking URL:', bookingUrl);
     window.open(bookingUrl, '_blank');
   };
-  if (!flight) return null; // Don't render if no flight is selected
+  if (!flight) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        {/* Close Button */}
         <button className="close-btn" onClick={onClose}>✖</button>
 
         <h2>Flight Details</h2>
-
-        {/* Outbound Flight Details */}
         <div className="flight-section">
           <h3>Outbound Flight</h3>
           <p><strong>{flight.outbound.from} → {flight.outbound.to}</strong></p>
           <p>Departure: {new Date(flight.outbound.segments[0].departureTime).toLocaleTimeString()}</p>
           <p>Arrival: {new Date(flight.outbound.segments[flight.outbound.segments.length - 1].arrivalTime).toLocaleTimeString()}</p>
 
-          {/* Show connection warning if applicable */}
           {flight.outbound.segments.length > 1 && <p className="warning">🚨 Connection Alert</p>}
 
-          {/* Display all segments if connected flights exist */}
           {flight.outbound.segments.map((segment, index) => (
             <div key={index} className="segment">
               <p>{segment.departure} → {segment.arrival}</p>
@@ -113,7 +99,6 @@ const FlightModal = ({ flight, onClose }) => {
           ))}
         </div>
 
-        {/* Return Flight Details (if available) */}
         {flight.return && (
           <div className="flight-section">
             <h3>Return Flight</h3>
@@ -133,7 +118,6 @@ const FlightModal = ({ flight, onClose }) => {
           </div>
         )}
 
-        {/* Book Button */}
         <button 
           className="book-btn"
           onClick={handleBookFlight}

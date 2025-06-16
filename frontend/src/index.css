@@ -12,7 +12,6 @@ code {
     monospace;
 }
 
-/* Ensures dropdown stays on top of other elements */
 .ui-autocomplete {
   position: absolute !important;
   z-index: 1050 !important; 

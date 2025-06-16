@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './FlightForm.css';
 import { fetchFlights, fetchAirports } from '../../api/amadeusAPI';
 import FlightCard from '../FlightCard/FlightCard';
-import Loading from '../Loading/Loading'; // Import reusable loading component
+import Loading from '../Loading/Loading';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 
 
 const FlightForm = ({ onSearch, initialState, onStateChange }) => {
-    // Initialize state from initialState if provided, otherwise use defaults
     const [tripType, setTripType] = useState(initialState?.tripType || 'one-way');
     const [origin, setOrigin] = useState(initialState?.origin || '');
     const [destination, setDestination] = useState(initialState?.destination || '');
@@ -49,7 +48,6 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
         }
     }, []);
 
-    // Save current form state whenever any input changes
     useEffect(() => {
         if (onStateChange) {
             const currentState = {
@@ -68,12 +66,11 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null); // Clear any previous errors
-        setHasSearched(true); // Mark that a search has been performed
-        onSearch(); // Notify parent component that search is in progress
+        setError(null);
+        setHasSearched(true);
+        onSearch();
 
         try {
-            // Call fetchFlights with individual parameters
             let data;
             if (tripType === 'round-trip' && returnDate) {
                 data = await fetchFlights(origin, destination, departureDate, returnDate, adults);
@@ -81,7 +78,6 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
                 data = await fetchFlights(origin, destination, departureDate, null, adults);
             }
             
-            // Check if the response contains an error
             if (data && data.error) {
                 setError(data.error);
                 setResults([]);
@@ -91,7 +87,6 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
             } else {
                 setResults(data);
                 
-                // Save the final state with results
                 if (onStateChange) {
                     onStateChange({
                         tripType,
@@ -114,11 +109,9 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
 
     return (
         <>
-            {/* Always show the form under the navbar */}
             <div className="flight-form-container">
                 <form onSubmit={handleSubmit} className="flight-form">
                     
-                    {/*  One-Way / Round-Trip Selector at the Top */}
                     <div className="trip-type">
                         <label>
                             <input
@@ -140,13 +133,12 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
                         </label>
                     </div>
     
-                    {/*  Input Fields for Origin, Destination, Dates, and Adults */}
                     <div className="input-fields">
                         <input id='origin' type="text" placeholder="Origin (e.g., MAD)" value={origin} onChange={(e) => setOrigin(e.target.value)} required />
                         <input id='destination' type="text" placeholder="Destination (e.g., ATH)" value={destination} onChange={(e) => setDestination(e.target.value)} required />
                         <input type="date" value={departureDate} onChange={(e) => setDepartureDate(e.target.value)} required />
                         
-                        {/* Show Return Date Only If Round-Trip is Selected */}
+                        
                         {tripType === 'round-trip' && (
                             <input type="date" value={returnDate} onChange={(e) => setReturnDate(e.target.value)} required />
                         )}
@@ -157,10 +149,10 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
                 </form>
             </div>
     
-            {/* Show loading indicator while fetching flights */}
+            
             {loading && <Loading />}
             
-            {/* Display error message if there's an error */}
+            
             {!loading && error && (
                 <div className="error-message">
                     <p>{error}</p>
@@ -168,7 +160,7 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
                 </div>
             )}
     
-            {/* Display search results */}
+            
             {!loading && !error && results.length > 0 && (
                 <div className="flight-results">
                     {results.map((flight, index) => (
@@ -177,7 +169,7 @@ const FlightForm = ({ onSearch, initialState, onStateChange }) => {
                 </div>
             )}
             
-            {/* No results but no error message - only show after a search */}
+            
             {!loading && !error && hasSearched && results.length === 0 && (
                 <div className="no-results-message">
                     <p>No search results found. Please try different search parameters.</p>

@@ -48,13 +48,10 @@ const NavBar = ({ onSectionChange }) => {
 
     return (
         <nav className="navbar">
-            {/* Left: Logo and Name */}
             <div className="navbar-left">
                 <img src="resources/logo.png" alt="Travel App Logo" className="logo" />
                 <span className="app-name">wanderVerse</span>
             </div>
-
-            {/* Middle: Sections */}
             <div className="navbar-middle">
                 <button
                     className={`nav-btn ${activeSection === 'stays' ? 'active' : ''}`}
@@ -82,7 +79,6 @@ const NavBar = ({ onSectionChange }) => {
                 </button>
             </div>
 
-            {/* Right: Person Icon */}
             <div 
                 className="navbar-right" 
                 onMouseEnter={() => setShowDropdown(true)} 

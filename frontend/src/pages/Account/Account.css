@@ -84,7 +84,6 @@
   background-color: #e0e0e0;
 }
 
-/* Modal styles */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -165,7 +164,6 @@
   background-color: #e0e0e0;
 }
 
-/* Loading state */
 .loading {
   display: flex;
   justify-content: center;

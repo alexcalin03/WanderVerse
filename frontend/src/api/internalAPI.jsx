@@ -57,7 +57,6 @@ const cache = {};
 export async function fetchBlogsPage(page = 1, perPage = 15, username = null, skipCache = false) {
   const cacheKey = `blogs?page=${page}&per_page=${perPage}${username ? '&username=' + username : ''}`;
   
-  // Use cache if available and skipCache is false
   if (!skipCache && cache[cacheKey]) {
     return cache[cacheKey];
   }

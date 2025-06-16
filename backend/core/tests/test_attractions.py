@@ -32,9 +32,8 @@ def test_attractions_missing_latitude(api_client):
 
 
 @pytest.mark.django_db
-@patch('core.views.search_attractions')  # Patch the import as used in views.py
+@patch('core.views.search_attractions')
 def test_attractions_success(mock_search, api_client):
-    # Setup mock return data - match the actual response structure
     mock_data = [
         {
             'booking_link': 'https://example.com/tour1',
@@ -72,29 +71,25 @@ def test_attractions_success(mock_search, api_client):
 
 
 @pytest.mark.django_db
-@patch('core.views.search_attractions')  # Patch the import as used in views.py
+@patch('core.views.search_attractions')
 def test_attractions_service_error(mock_search, api_client):
-    # Setup error response
     error_response = {'error': 'API rate limit exceeded'}
     mock_search.return_value = error_response
     
     response = api_client.get('/attractions/', {'latitude': '48.8566', 'longitude': '2.3522'})
     
-    # The API returns a 400 status when there's an error
     assert response.status_code == 400
     assert 'error' in response.json()
     assert 'Invalid attractions search data' in response.json()['error']
 
 
 @pytest.mark.django_db
-@patch('core.views.search_attractions')  # Patch the import as used in views.py
+@patch('core.views.search_attractions')
 def test_attractions_with_authenticated_user(mock_search, authenticated_client):
-    # Setup empty list return value
     mock_data = []
     mock_search.return_value = mock_data
     
     response = authenticated_client.get('/attractions/', {'latitude': '48.8566', 'longitude': '2.3522'})
     
-    # Verify response success
     assert response.status_code == 200
-    assert response.json() == []  # Empty list returned
+    assert response.json() == []

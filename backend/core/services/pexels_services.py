@@ -1,16 +1,17 @@
 import requests
 import os
+from dotenv import load_dotenv
 
-PEXELS_API_KEY = 'HAJLiOgyelZGWk65Qa5gg5owLYMSpyjj3BvjuBrsceMJmLx7STLyzhLX'
+load_dotenv()
+
+PEXELS_API_KEY = os.getenv('PEXELS_API_KEY')
 
 def search_photos(query, per_page=15):
     """
     Search for photos on Pexels API
-    
     Args:
         query (str): Search query string
         per_page (int): Number of photos to return
-        
     Returns:
         dict: JSON response from Pexels API
     """

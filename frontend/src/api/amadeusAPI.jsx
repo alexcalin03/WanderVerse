@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 
 export const fetchFlights = async (origin, destination, departureDate, returnDate = null, adults = 1) => {
     const cacheKey = `${origin}-${destination}-${departureDate}-${returnDate}-${adults}`;
@@ -79,11 +79,8 @@ export const fetchAttractions = async (latitude, longitude) => {
         const response = await axios.get(`${API_BASE}/attractions/`, {
             params: { latitude, longitude }
         });
-        console.log('API response for attractions:', response.data);
         
         return response.data.map(item => {
-            // Debug what's coming back
-            console.log('Single attraction data:', item);
             
             return {
                 name: item.name,
@@ -92,8 +89,6 @@ export const fetchAttractions = async (latitude, longitude) => {
                 latitude: item.latitude,
                 longitude: item.longitude,
                 image: item.image,
-                // Make sure we're getting the correct property name
-                // Try both property name formats to handle any backend formats
                 bookingLink: item.bookingLink || item.booking_link || ''
             };
         });

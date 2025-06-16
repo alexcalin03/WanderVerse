@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './HotelForm.css';
 import { fetchHotels, fetchCities } from '../../api/amadeusAPI';
 import HotelCard from '../HotelCard/HotelCard';
-import Loading from '../Loading/Loading'; // Import reusable loading component
+import Loading from '../Loading/Loading';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import 'jquery-ui-dist/jquery-ui.css';
 
 
 const HotelForm = ({ onSearch, initialState, onStateChange }) => {
-    // Initialize state from initialState if provided, otherwise use defaults
     const [cityCode, setCityCode] = useState(initialState?.cityCode || '');
     const [displayValue, setDisplayValue] = useState(initialState?.displayValue || '');
     const [checkInDate, setCheckInDate] = useState(initialState?.checkInDate || '');
@@ -60,7 +59,6 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
 
 
 
-    // Save current form state whenever any input changes
     useEffect(() => {
         if (onStateChange) {
             const currentState = {
@@ -82,18 +80,16 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
             return;
         }
         
-        // Call onSearch immediately when form is submitted
         if(onSearch) onSearch();
         
         setLoading(true);
         setResults([]);
-        setError(null); // Clear any previous errors
-        setHasSearched(true); // Mark that a search has been performed
+        setError(null); 
+        setHasSearched(true); 
         
         try {
             const data = await fetchHotels(cityCode, checkInDate, checkOutDate, adults);
             
-            // Check if the response contains an error
             if (data && data.error) {
                 setError(data.error);
                 setResults([]);
@@ -103,7 +99,6 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
             } else {
                 setResults(data);
                 
-                // Save the final state with results
                 if (onStateChange) {
                     onStateChange({
                         cityCode,
@@ -166,7 +161,6 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
         <div className="hotel-results">
             {loading && <Loading />}
             
-            {/* Display error message if there's an error */}
             {!loading && error && (
                 <div className="error-message">
                     <p>{error}</p>
@@ -174,7 +168,6 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
                 </div>
             )}
             
-            {/* Display search results */}
             {!loading && !error && results.length > 0 && (
                 <>
                     {results.map((hotel, index) => (
@@ -183,7 +176,6 @@ const HotelForm = ({ onSearch, initialState, onStateChange }) => {
                 </>
             )}
             
-            {/* No results but no error message - only show after a search */}
             {!loading && !error && hasSearched && results.length === 0 && (
                 <div className="no-results-message">
                     <p>No search results found. Please try different search parameters.</p>

@@ -15,7 +15,6 @@ const UserPreferencesModal = ({ show, onClose }) => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Predefined options
   const activities = ['Beach', 'Mountains', 'City', 'Cultural', 'Food', 'Adventure', 'Relaxation', 'Sightseeing', 'Hiking', 'Shopping'];
   const climates = ['Warm', 'Cold', 'Tropical', 'Moderate', 'Desert', 'Mediterranean', 'Arctic'];
   const budgetRanges = ['Budget', 'Mid-Range', 'Luxury', 'Ultra-Luxury'];
@@ -83,11 +82,10 @@ const UserPreferencesModal = ({ show, onClose }) => {
     }
   };
 
-  // Filter countries based on search term
   const filteredCountries = searchTerm 
     ? Object.entries(countriesData)
         .filter(([code, name]) => name.toLowerCase().includes(searchTerm.toLowerCase()))
-        .slice(0, 10) // Limit to 10 results
+        .slice(0, 10) 
     : [];
 
   if (!show) return null;
