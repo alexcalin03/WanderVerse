@@ -78,6 +78,12 @@
     width: 100%;
   }
   
+  .content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+  }
+  
   .edit-mode-content h2 {
     color: rgb(4, 173, 138);
     margin-top: 0;

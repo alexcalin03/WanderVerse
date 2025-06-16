@@ -10,12 +10,10 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
   // Track both local state and global state
   const [localPhoto, setLocalPhoto] = useState(suggestion.photoUrl || null);
   const [isLoading, setIsLoading] = useState(!suggestion.photoUrl && !localPhoto);
-  const [photoRequested, setPhotoRequested] = useState(false);
   const { updateSuggestionWithPhoto } = useSuggestions();
 
 
   useEffect(() => {
-    // If we already have a photo URL in the suggestion, use it
     if (suggestion.photoUrl) {
       setLocalPhoto(suggestion.photoUrl);
       setIsLoading(false);
@@ -25,39 +23,31 @@ const SuggestionCard = ({ suggestion, index, onClick }) => {
 
  
   useEffect(() => {
-    // Skip if already have a photo, or if a request was already made
-    if (localPhoto || suggestion.photoUrl || photoRequested) {
-      return;
-    }
-    
-    // Mark this suggestion as having a photo request in progress
-    setPhotoRequested(true);
-    
+    if (suggestion.photoUrl) return;
+  
     const fetchPhoto = async () => {
       try {
         setIsLoading(true);
-        
+  
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}/photos/?query=${encodeURIComponent(`${suggestion.name} `)}&per_page=1`,
+          `${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}` +
+          `/photos/?query=${encodeURIComponent(suggestion.name)}&per_page=1`
         );
-        
-        if (response.data.photos && response.data.photos.length > 0) {
+  
+        if (response.data.photos?.length) {
           const photoUrl = response.data.photos[0].src.medium;
           setLocalPhoto(photoUrl);
           updateSuggestionWithPhoto(suggestion.id, photoUrl);
         }
-        setIsLoading(false);
       } catch (error) {
         console.error(`Error fetching photo for ${suggestion.name}:`, error);
+      } finally {
         setIsLoading(false);
-        // In case of error, allow retrying later
-        setPhotoRequested(false);
       }
     };
-
-    // Execute without delay to speed up loading
+  
     fetchPhoto();
-  }, [suggestion.id, suggestion.name, suggestion.country, localPhoto, photoRequested, updateSuggestionWithPhoto]);
+  }, [suggestion.id]);
 
   return (
     <div 
@@ -103,16 +93,13 @@ const TravelSuggestions = ({ onSearch, section }) => {
   const { suggestions, loading, error, fetchSuggestions } = useSuggestions();
   const [hasAllPhotos, setHasAllPhotos] = useState(false);
   
-  // Check if all suggestions have photos
   useEffect(() => {
     if (!loading && suggestions && suggestions.length > 0) {
-      // If all suggestions have photos, we can show the content
       const allHavePhotos = suggestions.every(s => s.photoUrl);
       setHasAllPhotos(allHavePhotos);
     }
   }, [loading, suggestions]);
   
-  // Show loading until we have suggestions AND all photos are loaded
   const isLoading = loading ;
 
   if (isLoading) {
